@@ -40,8 +40,8 @@ class HydroOneDevice extends ZigBeeDevice {
 
     this.registerCapability('child_lock', SonoffHydroCluster, {
       get: 'childLock',
-      set: 'childLock',
-      setParser: value => value,
+      set: 'writeAttributes',
+      setParser: value => ({ childLock: value }),
       report: 'childLock',
       reportParser: value => Boolean(value),
     });
