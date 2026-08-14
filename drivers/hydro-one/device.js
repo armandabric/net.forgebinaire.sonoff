@@ -36,9 +36,23 @@ const IRRIGATION_CONFIG_CAPABILITIES = [
   'irrigation_mode', 'irrigation_duration', 'irrigation_amount', 'irrigation_fail_safe_duration',
 ];
 
+// Homey does not retroactively add capabilities introduced by an app
+// update to already-paired devices, so this full list is reconciled on
+// every init to migrate existing devices forward.
+const ALL_CAPABILITIES = [
+  'onoff', 'alarm_water', 'alarm_water_shortage', 'child_lock', 'measure_battery',
+  'irrigation_amount_unit', ...IRRIGATION_CONFIG_CAPABILITIES,
+];
+
 class HydroOneDevice extends ZigBeeDevice {
 
   async onNodeInit({ zclNode }) {
+    for (const capabilityId of ALL_CAPABILITIES) {
+      if (!this.hasCapability(capabilityId)) {
+        await this.addCapability(capabilityId);
+      }
+    }
+
     // Confirmed via Zigbee interview: OnOff and the Sonoff cluster (0xFC11)
     // both live on endpoint 1.
     this.registerCapability('onoff', CLUSTER.ON_OFF);
