@@ -6,6 +6,8 @@ ported from Sonoff's official ZHA quirk (Python/zigpy, for Home Assistant)
 to the Homey Apps SDK (Node.js). The device isn't natively supported by
 Homey, and Sonoff only publishes a ZHA quirk — this app re-implements the
 same Zigbee protocol on top of `homey-zigbeedriver` / `zigbee-clusters`.
+The original quirk is kept in [`reference/`](reference/) as the source of
+truth for anything not yet ported.
 
 ## Status
 
