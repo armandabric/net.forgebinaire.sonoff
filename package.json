@@ -1,0 +1,14 @@
+{
+  "name": "net.forgebinaire.sonoff",
+  "version": "0.1.0",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "validate": "homey app validate",
+    "run": "homey app run"
+  },
+  "dependencies": {
+    "homey-zigbeedriver": ">=2.0.0",
+    "zigbee-clusters": ">=2.0.0"
+  }
+}

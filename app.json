@@ -1,0 +1,85 @@
+{
+  "id": "net.forgebinaire.sonoff",
+  "version": "0.1.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": ["local"],
+  "connectivity": ["zigbee"],
+  "brandColor": "#0088CE",
+  "name": {
+    "en": "Sonoff Hydro",
+    "fr": "Sonoff Hydro"
+  },
+  "description": {
+    "en": "Control your Sonoff Zigbee smart water valves",
+    "fr": "Contrôle de vos vannes d'eau connectées Zigbee Sonoff"
+  },
+  "category": ["appliances"],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png"
+  },
+  "author": {
+    "name": "Armand Abric",
+    "email": "armand@forgebinaire.net"
+  },
+  "capabilities": {
+    "child_lock": {
+      "type": "boolean",
+      "title": {
+        "en": "Child lock",
+        "fr": "Verrouillage enfant"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/child_lock.svg"
+    },
+    "alarm_water_shortage": {
+      "type": "boolean",
+      "title": {
+        "en": "Water shortage",
+        "fr": "Manque d'eau"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "/assets/alarm_water_shortage.svg"
+    }
+  },
+  "drivers": [
+    {
+      "id": "hydro-one",
+      "name": {
+        "en": "Hydro One",
+        "fr": "Hydro One"
+      },
+      "class": "sprinkler",
+      "capabilities": ["onoff", "alarm_water", "alarm_water_shortage", "child_lock"],
+      "platforms": ["local"],
+      "connectivity": ["zigbee"],
+      "images": {
+        "small": "/drivers/hydro-one/assets/images/small.png",
+        "large": "/drivers/hydro-one/assets/images/large.png"
+      },
+      "zigbee": {
+        "manufacturerName": ["SONOFF"],
+        "productId": ["SWV-ZFU", "SWV-ZFE", "SWV-ZNU", "SWV-ZNE"],
+        "endpoints": {
+          "1": {
+            "clusters": [0, 3, 6, 64529],
+            "bindings": [6, 64529]
+          }
+        },
+        "learnmode": {
+          "instruction": {
+            "en": "Put your Hydro One in pairing mode (see the manufacturer's manual), then press the button below.",
+            "fr": "Mettez votre Hydro One en mode appairage (voir le manuel du fabricant), puis appuyez sur le bouton ci-dessous."
+          }
+        }
+      }
+    }
+  ]
+}
