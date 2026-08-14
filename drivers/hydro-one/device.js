@@ -14,15 +14,6 @@ const WATER_VALVE_STATE_BIT = {
   WATER_SHORTAGE_CHANNEL_2: 1 << 4,
 };
 
-// The valve is a sleepy battery end device: it wakes up roughly once an
-// hour (poll control check-in), so alarm state relies on the device
-// proactively reporting changes rather than on-demand reads.
-const WATER_VALVE_STATE_REPORTING = {
-  minInterval: 30,
-  maxInterval: 900,
-  minChange: 1,
-};
-
 class HydroOneDevice extends ZigBeeDevice {
 
   async onNodeInit({ zclNode }) {
@@ -30,11 +21,13 @@ class HydroOneDevice extends ZigBeeDevice {
     // both live on endpoint 1.
     this.registerCapability('onoff', CLUSTER.ON_OFF);
 
+    // The firmware rejects ZCL "configure reporting" for waterValveState
+    // (UNSUPPORTED_ATTRIBUTE) but sends unsolicited reports on its own, so
+    // we only listen for reports rather than requesting a reporting config.
     this.registerCapability('alarm_water', SonoffHydroCluster, {
       get: 'waterValveState',
       report: 'waterValveState',
       reportParser: value => Boolean(value & WATER_VALVE_STATE_BIT.WATER_LEAKAGE),
-      reportOpts: { configureAttributeReporting: WATER_VALVE_STATE_REPORTING },
     });
 
     this.registerCapability('alarm_water_shortage', SonoffHydroCluster, {
@@ -43,7 +36,6 @@ class HydroOneDevice extends ZigBeeDevice {
       reportParser: value => Boolean(
         value & (WATER_VALVE_STATE_BIT.WATER_SHORTAGE | WATER_VALVE_STATE_BIT.WATER_SHORTAGE_CHANNEL_2),
       ),
-      reportOpts: { configureAttributeReporting: WATER_VALVE_STATE_REPORTING },
     });
 
     this.registerCapability('child_lock', SonoffHydroCluster, {
