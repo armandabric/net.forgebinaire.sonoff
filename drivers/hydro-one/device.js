@@ -4,6 +4,11 @@ const { ZigBeeDevice } = require('homey-zigbeedriver');
 const { CLUSTER } = require('zigbee-clusters');
 
 const SonoffHydroCluster = require('../../lib/SonoffHydroCluster');
+const {
+  SingleIrrigationMode,
+  encodeSingleIrrigationPayload,
+  decodeSingleIrrigationPayload,
+} = require('../../lib/sonoffIrrigation');
 
 // Bit layout of the sonoffHydro `waterValveState` attribute (0x500C), as
 // documented in Sonoff's ZHA quirk: several alarm conditions are packed
@@ -13,6 +18,23 @@ const WATER_VALVE_STATE_BIT = {
   WATER_LEAKAGE: 1 << 1,
   WATER_SHORTAGE_CHANNEL_2: 1 << 4,
 };
+
+const IRRIGATION_MODE_TO_ZCL = {
+  duration: SingleIrrigationMode.DURATION,
+  volume: SingleIrrigationMode.VOLUME,
+};
+const IRRIGATION_MODE_FROM_ZCL = {
+  [SingleIrrigationMode.DURATION]: 'duration',
+  [SingleIrrigationMode.VOLUME]: 'volume',
+};
+
+// IrrigationAmountUnit enum (the real, user-facing unit attribute).
+const AMOUNT_UNIT_TO_ZCL = { liter: 0, us_gallon: 1, imperial_gallon: 2 };
+const AMOUNT_UNIT_FROM_ZCL = { 0: 'liter', 1: 'us_gallon', 2: 'imperial_gallon' };
+
+const IRRIGATION_CONFIG_CAPABILITIES = [
+  'irrigation_mode', 'irrigation_duration', 'irrigation_amount', 'irrigation_fail_safe_duration',
+];
 
 class HydroOneDevice extends ZigBeeDevice {
 
@@ -47,6 +69,55 @@ class HydroOneDevice extends ZigBeeDevice {
     });
 
     this.registerCapability('measure_battery', CLUSTER.POWER_CONFIGURATION);
+
+    this.registerCapability('irrigation_amount_unit', SonoffHydroCluster, {
+      get: 'unitOfWaterFlow',
+      set: 'writeAttributes',
+      setParser: value => ({ unitOfWaterFlow: AMOUNT_UNIT_TO_ZCL[value] }),
+      report: 'unitOfWaterFlow',
+      reportParser: value => AMOUNT_UNIT_FROM_ZCL[value] ?? 'liter',
+    });
+
+    // These four capabilities together configure a single manual irrigation
+    // run (mode, duration, target amount, fail-safe cutoff); the firmware
+    // only exposes them as one combined 12-byte attribute, so reads parse
+    // out one field each and writes are merged into a single payload below.
+    this.registerCapability('irrigation_mode', SonoffHydroCluster, {
+      get: 'singleIrrigationSet',
+      report: 'singleIrrigationSet',
+      reportParser: value => IRRIGATION_MODE_FROM_ZCL[decodeSingleIrrigationPayload(value).irrigationMode] ?? 'duration',
+    });
+
+    this.registerCapability('irrigation_duration', SonoffHydroCluster, {
+      get: 'singleIrrigationSet',
+      report: 'singleIrrigationSet',
+      reportParser: value => decodeSingleIrrigationPayload(value).totalDurationMin,
+    });
+
+    this.registerCapability('irrigation_amount', SonoffHydroCluster, {
+      get: 'singleIrrigationSet',
+      report: 'singleIrrigationSet',
+      reportParser: value => decodeSingleIrrigationPayload(value).amount,
+    });
+
+    this.registerCapability('irrigation_fail_safe_duration', SonoffHydroCluster, {
+      get: 'singleIrrigationSet',
+      report: 'singleIrrigationSet',
+      reportParser: value => decodeSingleIrrigationPayload(value).failSafeDurationMin,
+    });
+
+    this.registerMultipleCapabilityListener(IRRIGATION_CONFIG_CAPABILITIES, async valueObj => {
+      const payload = encodeSingleIrrigationPayload({
+        irrigationMode: IRRIGATION_MODE_TO_ZCL[
+          valueObj.irrigation_mode ?? this.getCapabilityValue('irrigation_mode')
+        ],
+        totalDurationMin: valueObj.irrigation_duration ?? this.getCapabilityValue('irrigation_duration'),
+        amount: valueObj.irrigation_amount ?? this.getCapabilityValue('irrigation_amount'),
+        failSafeDurationMin: valueObj.irrigation_fail_safe_duration
+          ?? this.getCapabilityValue('irrigation_fail_safe_duration'),
+      });
+      await this.zclNode.endpoints[1].clusters.sonoffHydro.writeAttributes({ singleIrrigationSet: payload });
+    });
   }
 
 }

@@ -47,6 +47,76 @@
       "uiComponent": "sensor",
       "insights": false,
       "icon": "/assets/alarm_water_shortage.svg"
+    },
+    "irrigation_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Manual irrigation mode",
+        "fr": "Mode d'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        { "id": "duration", "title": { "en": "Duration", "fr": "Durée" } },
+        { "id": "volume", "title": { "en": "Volume", "fr": "Volume" } }
+      ]
+    },
+    "irrigation_amount_unit": {
+      "type": "enum",
+      "title": {
+        "en": "Capacity unit",
+        "fr": "Unité de capacité"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        { "id": "liter", "title": { "en": "Liter", "fr": "Litre" } },
+        { "id": "us_gallon", "title": { "en": "US gallon", "fr": "Gallon US" } },
+        { "id": "imperial_gallon", "title": { "en": "Imperial gallon", "fr": "Gallon impérial" } }
+      ]
+    },
+    "irrigation_duration": {
+      "type": "number",
+      "title": {
+        "en": "Manual irrigation duration",
+        "fr": "Durée d'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": { "en": "min" },
+      "min": 1,
+      "max": 719,
+      "step": 1
+    },
+    "irrigation_amount": {
+      "type": "number",
+      "title": {
+        "en": "Manual irrigation amount",
+        "fr": "Quantité d'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "min": 1,
+      "max": 10000,
+      "step": 1
+    },
+    "irrigation_fail_safe_duration": {
+      "type": "number",
+      "title": {
+        "en": "Manual irrigation fail-safe duration",
+        "fr": "Durée de sécurité de l'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": { "en": "min" },
+      "min": 1,
+      "max": 719,
+      "step": 1
     }
   },
   "drivers": [
@@ -57,7 +127,11 @@
         "fr": "Hydro One"
       },
       "class": "sprinkler",
-      "capabilities": ["onoff", "alarm_water", "alarm_water_shortage", "child_lock", "measure_battery"],
+      "capabilities": [
+        "onoff", "alarm_water", "alarm_water_shortage", "child_lock", "measure_battery",
+        "irrigation_mode", "irrigation_amount_unit", "irrigation_duration", "irrigation_amount",
+        "irrigation_fail_safe_duration"
+      ],
       "energy": {
         "batteries": ["OTHER"]
       },
