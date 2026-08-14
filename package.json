@@ -14,6 +14,6 @@
     "zigbee-clusters": ">=2.0.0"
   },
   "devDependencies": {
-    "homey": ">=3.0.0"
+    "homey": "^4.4.2"
   }
 }
