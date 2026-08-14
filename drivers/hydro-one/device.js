@@ -45,6 +45,8 @@ class HydroOneDevice extends ZigBeeDevice {
       report: 'childLock',
       reportParser: value => Boolean(value),
     });
+
+    this.registerCapability('measure_battery', CLUSTER.POWER_CONFIGURATION);
   }
 
 }
