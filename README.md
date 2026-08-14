@@ -25,18 +25,28 @@ Confirmed working on real hardware (Homey Pro, device model `SWV-ZFE`):
 | `irrigation_duration` | `sonoffHydro.singleIrrigationSet` | Minutes, used in Duration mode |
 | `irrigation_amount` | `sonoffHydro.singleIrrigationSet` | Used in Volume mode |
 | `irrigation_fail_safe_duration` | `sonoffHydro.singleIrrigationSet` | Safety cutoff, used in Volume mode |
+| `measure_water_usage_duration` | `sonoffHydro.waterUsageDuration` (`0x501C`) | Duration of the last watering run, minutes. Not cumulative. |
+| `meter_water` | `sonoffHydro.waterUsageVolume` (`0x501B`) | Lifetime cumulative volume, m³. **Unit assumed** — see below. |
 
 The four `irrigation_*` config capabilities configure what happens the
 *next* time the valve is opened via `onoff` — there is no separate
 "start irrigation" command in this cluster; opening the valve runs
 whatever mode/duration/amount was last written.
 
+`meter_water` is a lifetime running total (per the source quirk's
+`TOTAL_INCREASING` state class), not a per-run value — to check how much a
+single manual irrigation actually used, compare the value before and
+after, or watch `measure_water_usage_duration` for the run's duration.
+The device reports the raw volume in an unspecified unit; this app
+**assumes liters** (consistent with the rest of the protocol) and converts
+to m³ for `meter_water`. Not yet verified against a real, known volume of
+water — treat the absolute value with some skepticism until confirmed.
+
 Not yet ported (present in the source ZHA quirk, not in this app):
 
 - The 6 scheduled irrigation plans (day/time, repeat mode, weekday mask).
 - Seasonal (monthly) watering adjustment.
 - Manual rain delay.
-- Water usage sensors (`water_usage_duration` `0x501C`, `water_usage_volume` `0x501B`).
 
 These all live behind the same `sonoffHydro` cluster (`0xFC11`) and are
 protocol-wise understood (see the source quirk), just not wired up yet.

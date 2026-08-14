@@ -42,7 +42,12 @@ const IRRIGATION_CONFIG_CAPABILITIES = [
 const ALL_CAPABILITIES = [
   'onoff', 'alarm_water', 'alarm_water_shortage', 'child_lock', 'measure_battery',
   'irrigation_amount_unit', ...IRRIGATION_CONFIG_CAPABILITIES,
+  'measure_water_usage_duration', 'meter_water',
 ];
+
+// Liters assumed for waterUsageVolume - the source quirk declares no
+// explicit unit for it. meter_water is conventionally m³ in Homey.
+const LITERS_PER_CUBIC_METER = 1000;
 
 class HydroOneDevice extends ZigBeeDevice {
 
@@ -131,6 +136,18 @@ class HydroOneDevice extends ZigBeeDevice {
           ?? this.getCapabilityValue('irrigation_fail_safe_duration'),
       });
       await this.zclNode.endpoints[1].clusters.sonoffHydro.writeAttributes({ singleIrrigationSet: payload });
+    });
+
+    this.registerCapability('measure_water_usage_duration', SonoffHydroCluster, {
+      get: 'waterUsageDuration',
+      report: 'waterUsageDuration',
+      reportParser: value => value,
+    });
+
+    this.registerCapability('meter_water', SonoffHydroCluster, {
+      get: 'waterUsageVolume',
+      report: 'waterUsageVolume',
+      reportParser: value => value / LITERS_PER_CUBIC_METER,
     });
   }
 

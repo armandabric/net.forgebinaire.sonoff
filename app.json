@@ -117,6 +117,17 @@
       "min": 1,
       "max": 719,
       "step": 1
+    },
+    "measure_water_usage_duration": {
+      "type": "number",
+      "title": {
+        "en": "Last watering duration",
+        "fr": "Durée du dernier arrosage"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": { "en": "min" }
     }
   },
   "drivers": [
@@ -130,7 +141,7 @@
       "capabilities": [
         "onoff", "alarm_water", "alarm_water_shortage", "child_lock", "measure_battery",
         "irrigation_mode", "irrigation_amount_unit", "irrigation_duration", "irrigation_amount",
-        "irrigation_fail_safe_duration"
+        "irrigation_fail_safe_duration", "measure_water_usage_duration", "meter_water"
       ],
       "energy": {
         "batteries": ["OTHER"]
