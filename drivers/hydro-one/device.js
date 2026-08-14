@@ -3,7 +3,7 @@
 const { ZigBeeDevice } = require('homey-zigbeedriver');
 const { CLUSTER } = require('zigbee-clusters');
 
-require('../../lib/SonoffHydroCluster');
+const SonoffHydroCluster = require('../../lib/SonoffHydroCluster');
 
 // Bit layout of the sonoffHydro `waterValveState` attribute (0x500C), as
 // documented in Sonoff's ZHA quirk: several alarm conditions are packed
@@ -14,36 +14,44 @@ const WATER_VALVE_STATE_BIT = {
   WATER_SHORTAGE_CHANNEL_2: 1 << 4,
 };
 
+// The valve is a sleepy battery end device: it wakes up roughly once an
+// hour (poll control check-in), so alarm state relies on the device
+// proactively reporting changes rather than on-demand reads.
+const WATER_VALVE_STATE_REPORTING = {
+  minInterval: 30,
+  maxInterval: 900,
+  minChange: 1,
+};
+
 class HydroOneDevice extends ZigBeeDevice {
 
   async onNodeInit({ zclNode }) {
-    // Assumes the valve exposes the standard OnOff and the Sonoff cluster
-    // on endpoint 1; unconfirmed until paired with a real device.
+    // Confirmed via Zigbee interview: OnOff and the Sonoff cluster (0xFC11)
+    // both live on endpoint 1.
     this.registerCapability('onoff', CLUSTER.ON_OFF);
 
-    this.registerCapability('alarm_water', 'sonoffHydro', {
+    this.registerCapability('alarm_water', SonoffHydroCluster, {
       get: 'waterValveState',
       report: 'waterValveState',
       reportParser: value => Boolean(value & WATER_VALVE_STATE_BIT.WATER_LEAKAGE),
-      getOpts: { getOnStart: true },
+      reportOpts: { configureAttributeReporting: WATER_VALVE_STATE_REPORTING },
     });
 
-    this.registerCapability('alarm_water_shortage', 'sonoffHydro', {
+    this.registerCapability('alarm_water_shortage', SonoffHydroCluster, {
       get: 'waterValveState',
       report: 'waterValveState',
       reportParser: value => Boolean(
         value & (WATER_VALVE_STATE_BIT.WATER_SHORTAGE | WATER_VALVE_STATE_BIT.WATER_SHORTAGE_CHANNEL_2),
       ),
-      getOpts: { getOnStart: true },
+      reportOpts: { configureAttributeReporting: WATER_VALVE_STATE_REPORTING },
     });
 
-    this.registerCapability('child_lock', 'sonoffHydro', {
+    this.registerCapability('child_lock', SonoffHydroCluster, {
       get: 'childLock',
       set: 'childLock',
       setParser: value => value,
       report: 'childLock',
       reportParser: value => Boolean(value),
-      getOpts: { getOnStart: true },
     });
   }
 
