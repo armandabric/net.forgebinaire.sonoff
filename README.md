@@ -32,12 +32,11 @@ The four `irrigation_*` config capabilities configure what happens the
 "start irrigation" command in this cluster; opening the valve runs
 whatever mode/duration/amount was last written.
 
-There's no unit picker: `sonoffHydro.unitOfWaterFlow` (`0x5021`, which
-governs how the firmware interprets `irrigation_amount`) is force-written
-to Liter (`0`) once on pairing, rather than exposed as a capability. This
-is a deliberate simplification, not a limitation of the protocol — the
-device does support US/Imperial gallon too, see `IrrigationAmountUnit` in
-the source quirk if that's ever needed.
+`sonoffHydro.unitOfWaterFlow` (`0x5021`, which governs how the firmware
+interprets `irrigation_amount`) isn't a capability — it's rarely changed,
+so it's a device **setting** instead (device page → advanced settings),
+defaulting to Liter. Changing it pushes the new unit to the device; it
+doesn't convert any already-configured `irrigation_amount` value.
 
 `meter_water` is a lifetime running total (per the source quirk's
 `TOTAL_INCREASING` state class), not a per-run value — to check how much a

@@ -131,6 +131,31 @@
       "energy": {
         "batteries": ["OTHER"]
       },
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Irrigation",
+            "fr": "Irrigation"
+          },
+          "children": [
+            {
+              "id": "water_flow_unit",
+              "type": "dropdown",
+              "label": {
+                "en": "Capacity unit",
+                "fr": "Unité de capacité"
+              },
+              "value": "liter",
+              "values": [
+                { "id": "liter", "label": { "en": "Liter", "fr": "Litre" } },
+                { "id": "us_gallon", "label": { "en": "US gallon", "fr": "Gallon US" } },
+                { "id": "imperial_gallon", "label": { "en": "Imperial gallon", "fr": "Gallon impérial" } }
+              ]
+            }
+          ]
+        }
+      ],
       "platforms": ["local"],
       "connectivity": ["zigbee"],
       "images": {

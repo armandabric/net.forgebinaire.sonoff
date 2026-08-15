@@ -28,9 +28,10 @@ const IRRIGATION_MODE_FROM_ZCL = {
   [SingleIrrigationMode.VOLUME]: 'volume',
 };
 
-// IrrigationAmountUnit enum value for Liter - the app always forces this,
-// there is no unit picker (see README).
-const WATER_FLOW_UNIT_LITER = 0;
+// IrrigationAmountUnit enum (the real, user-facing unit attribute),
+// configured via the device settings page rather than a capability.
+const WATER_FLOW_UNIT_TO_ZCL = { liter: 0, us_gallon: 1, imperial_gallon: 2 };
+const WATER_FLOW_UNIT_SETTING_DEFAULT = 'liter';
 
 const IRRIGATION_CONFIG_CAPABILITIES = [
   'irrigation_mode', 'irrigation_duration', 'irrigation_amount', 'irrigation_fail_safe_duration',
@@ -98,12 +99,10 @@ class HydroOneDevice extends ZigBeeDevice {
 
     this.registerCapability('measure_battery', CLUSTER.POWER_CONFIGURATION);
 
-    // No unit picker in the UI - force the device to Liter once on pairing
-    // so `irrigation_amount` always means the same thing.
+    // The capacity unit is a device setting rather than a capability (it's
+    // rarely changed); push the current setting to the device on pairing.
     if (this.isFirstInit()) {
-      await this.zclNode.endpoints[1].clusters.sonoffHydro
-        .writeAttributes({ unitOfWaterFlow: WATER_FLOW_UNIT_LITER })
-        .catch(err => this.error('Error: could not force water flow unit to Liter', err));
+      await this._writeWaterFlowUnit(this.getSetting('water_flow_unit') ?? WATER_FLOW_UNIT_SETTING_DEFAULT);
     }
 
     // These four capabilities together configure a single manual irrigation
@@ -158,6 +157,18 @@ class HydroOneDevice extends ZigBeeDevice {
       report: 'waterUsageVolume',
       reportParser: value => value / LITERS_PER_CUBIC_METER,
     });
+  }
+
+  async onSettings({ newSettings, changedKeys }) {
+    if (changedKeys.includes('water_flow_unit')) {
+      await this._writeWaterFlowUnit(newSettings.water_flow_unit);
+    }
+  }
+
+  async _writeWaterFlowUnit(unit) {
+    await this.zclNode.endpoints[1].clusters.sonoffHydro
+      .writeAttributes({ unitOfWaterFlow: WATER_FLOW_UNIT_TO_ZCL[unit] ?? WATER_FLOW_UNIT_TO_ZCL[WATER_FLOW_UNIT_SETTING_DEFAULT] })
+      .catch(err => this.error('Error: could not write water flow unit', err));
   }
 
 }
