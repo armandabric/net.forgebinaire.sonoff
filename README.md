@@ -21,7 +21,6 @@ Confirmed working on real hardware (Homey Pro, device model `SWV-ZFE`):
 | `child_lock` | `sonoffHydro.childLock` (`0x0000`) | |
 | `measure_battery` | standard `PowerConfiguration` (`0x0001`) | Device reports its own reporting config |
 | `irrigation_mode` | `sonoffHydro.singleIrrigationSet` (`0x501D`) | Duration / Volume, see below |
-| `irrigation_amount_unit` | `sonoffHydro.unitOfWaterFlow` (`0x5021`) | Liter / US gallon / Imperial gallon |
 | `irrigation_duration` | `sonoffHydro.singleIrrigationSet` | Minutes, used in Duration mode |
 | `irrigation_amount` | `sonoffHydro.singleIrrigationSet` | Used in Volume mode |
 | `irrigation_fail_safe_duration` | `sonoffHydro.singleIrrigationSet` | Safety cutoff, used in Volume mode |
@@ -32,6 +31,13 @@ The four `irrigation_*` config capabilities configure what happens the
 *next* time the valve is opened via `onoff` — there is no separate
 "start irrigation" command in this cluster; opening the valve runs
 whatever mode/duration/amount was last written.
+
+There's no unit picker: `sonoffHydro.unitOfWaterFlow` (`0x5021`, which
+governs how the firmware interprets `irrigation_amount`) is force-written
+to Liter (`0`) once on pairing, rather than exposed as a capability. This
+is a deliberate simplification, not a limitation of the protocol — the
+device does support US/Imperial gallon too, see `IrrigationAmountUnit` in
+the source quirk if that's ever needed.
 
 `meter_water` is a lifetime running total (per the source quirk's
 `TOTAL_INCREASING` state class), not a per-run value — to check how much a

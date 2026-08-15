@@ -28,9 +28,9 @@ const IRRIGATION_MODE_FROM_ZCL = {
   [SingleIrrigationMode.VOLUME]: 'volume',
 };
 
-// IrrigationAmountUnit enum (the real, user-facing unit attribute).
-const AMOUNT_UNIT_TO_ZCL = { liter: 0, us_gallon: 1, imperial_gallon: 2 };
-const AMOUNT_UNIT_FROM_ZCL = { 0: 'liter', 1: 'us_gallon', 2: 'imperial_gallon' };
+// IrrigationAmountUnit enum value for Liter - the app always forces this,
+// there is no unit picker (see README).
+const WATER_FLOW_UNIT_LITER = 0;
 
 const IRRIGATION_CONFIG_CAPABILITIES = [
   'irrigation_mode', 'irrigation_duration', 'irrigation_amount', 'irrigation_fail_safe_duration',
@@ -41,9 +41,13 @@ const IRRIGATION_CONFIG_CAPABILITIES = [
 // every init to migrate existing devices forward.
 const ALL_CAPABILITIES = [
   'onoff', 'alarm_water', 'alarm_water_shortage', 'child_lock', 'measure_battery',
-  'irrigation_amount_unit', ...IRRIGATION_CONFIG_CAPABILITIES,
+  ...IRRIGATION_CONFIG_CAPABILITIES,
   'measure_water_usage_duration', 'meter_water',
 ];
+
+// Capabilities removed from a previous version of this app, still present
+// on devices paired back then.
+const REMOVED_CAPABILITIES = ['irrigation_amount_unit'];
 
 // Liters assumed for waterUsageVolume - the source quirk declares no
 // explicit unit for it. meter_water is conventionally m³ in Homey.
@@ -55,6 +59,11 @@ class HydroOneDevice extends ZigBeeDevice {
     for (const capabilityId of ALL_CAPABILITIES) {
       if (!this.hasCapability(capabilityId)) {
         await this.addCapability(capabilityId);
+      }
+    }
+    for (const capabilityId of REMOVED_CAPABILITIES) {
+      if (this.hasCapability(capabilityId)) {
+        await this.removeCapability(capabilityId);
       }
     }
 
@@ -89,13 +98,13 @@ class HydroOneDevice extends ZigBeeDevice {
 
     this.registerCapability('measure_battery', CLUSTER.POWER_CONFIGURATION);
 
-    this.registerCapability('irrigation_amount_unit', SonoffHydroCluster, {
-      get: 'unitOfWaterFlow',
-      set: 'writeAttributes',
-      setParser: value => ({ unitOfWaterFlow: AMOUNT_UNIT_TO_ZCL[value] }),
-      report: 'unitOfWaterFlow',
-      reportParser: value => AMOUNT_UNIT_FROM_ZCL[value] ?? 'liter',
-    });
+    // No unit picker in the UI - force the device to Liter once on pairing
+    // so `irrigation_amount` always means the same thing.
+    if (this.isFirstInit()) {
+      await this.zclNode.endpoints[1].clusters.sonoffHydro
+        .writeAttributes({ unitOfWaterFlow: WATER_FLOW_UNIT_LITER })
+        .catch(err => this.error('Error: could not force water flow unit to Liter', err));
+    }
 
     // These four capabilities together configure a single manual irrigation
     // run (mode, duration, target amount, fail-safe cutoff); the firmware

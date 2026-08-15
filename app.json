@@ -62,21 +62,6 @@
         { "id": "volume", "title": { "en": "Volume", "fr": "Volume" } }
       ]
     },
-    "irrigation_amount_unit": {
-      "type": "enum",
-      "title": {
-        "en": "Capacity unit",
-        "fr": "Unité de capacité"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "values": [
-        { "id": "liter", "title": { "en": "Liter", "fr": "Litre" } },
-        { "id": "us_gallon", "title": { "en": "US gallon", "fr": "Gallon US" } },
-        { "id": "imperial_gallon", "title": { "en": "Imperial gallon", "fr": "Gallon impérial" } }
-      ]
-    },
     "irrigation_duration": {
       "type": "number",
       "title": {
@@ -140,7 +125,7 @@
       "class": "sprinkler",
       "capabilities": [
         "onoff", "alarm_water", "alarm_water_shortage", "child_lock", "measure_battery",
-        "irrigation_mode", "irrigation_amount_unit", "irrigation_duration", "irrigation_amount",
+        "irrigation_mode", "irrigation_duration", "irrigation_amount",
         "irrigation_fail_safe_duration", "measure_water_usage_duration", "meter_water"
       ],
       "energy": {
