@@ -143,8 +143,8 @@
               "id": "water_flow_unit",
               "type": "dropdown",
               "label": {
-                "en": "Capacity unit",
-                "fr": "Unité de capacité"
+                "en": "Volume unit",
+                "fr": "Unité des volumes"
               },
               "value": "liter",
               "values": [
