@@ -1,0 +1,13 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Manual irrigation amount",
+    "fr": "Quantité d'irrigation manuelle"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "min": 1,
+  "max": 10000,
+  "step": 1
+}

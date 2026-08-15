@@ -1,10 +1,15 @@
 {
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.forgebinaire.sonoff",
   "version": "0.1.0",
   "compatibility": ">=12.0.0",
   "sdk": 3,
-  "platforms": ["local"],
-  "connectivity": ["zigbee"],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "zigbee"
+  ],
   "brandColor": "#0088CE",
   "name": {
     "en": "Sonoff Hydro",
@@ -14,7 +19,9 @@
     "en": "Control your Sonoff Zigbee smart water valves",
     "fr": "Contrôle de vos vannes d'eau connectées Zigbee Sonoff"
   },
-  "category": ["appliances"],
+  "category": [
+    "appliances"
+  ],
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",
@@ -24,113 +31,75 @@
     "name": "Armand Abric",
     "email": "armand@forgebinaire.net"
   },
-  "capabilities": {
-    "child_lock": {
-      "type": "boolean",
-      "title": {
-        "en": "Child lock",
-        "fr": "Verrouillage enfant"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "toggle",
-      "icon": "/assets/child_lock.svg"
-    },
-    "alarm_water_shortage": {
-      "type": "boolean",
-      "title": {
-        "en": "Water shortage",
-        "fr": "Manque d'eau"
-      },
-      "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
-      "insights": false,
-      "icon": "/assets/alarm_water_shortage.svg"
-    },
-    "irrigation_mode": {
-      "type": "enum",
-      "title": {
-        "en": "Manual irrigation mode",
-        "fr": "Mode d'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "values": [
-        { "id": "duration", "title": { "en": "Duration", "fr": "Durée" } },
-        { "id": "volume", "title": { "en": "Volume", "fr": "Volume" } }
-      ]
-    },
-    "irrigation_duration": {
-      "type": "number",
-      "title": {
-        "en": "Manual irrigation duration",
-        "fr": "Durée d'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "slider",
-      "units": { "en": "min" },
-      "min": 1,
-      "max": 719,
-      "step": 1
-    },
-    "irrigation_amount": {
-      "type": "number",
-      "title": {
-        "en": "Manual irrigation amount",
-        "fr": "Quantité d'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "slider",
-      "min": 1,
-      "max": 10000,
-      "step": 1
-    },
-    "irrigation_fail_safe_duration": {
-      "type": "number",
-      "title": {
-        "en": "Manual irrigation fail-safe duration",
-        "fr": "Durée de sécurité de l'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "slider",
-      "units": { "en": "min" },
-      "min": 1,
-      "max": 719,
-      "step": 1
-    },
-    "measure_water_usage_duration": {
-      "type": "number",
-      "title": {
-        "en": "Last watering duration",
-        "fr": "Durée du dernier arrosage"
-      },
-      "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
-      "units": { "en": "min" }
-    }
-  },
   "drivers": [
     {
-      "id": "hydro-one",
       "name": {
         "en": "Hydro One",
         "fr": "Hydro One"
       },
       "class": "sprinkler",
       "capabilities": [
-        "onoff", "alarm_water", "alarm_water_shortage", "child_lock", "measure_battery",
-        "irrigation_mode", "irrigation_duration", "irrigation_amount",
-        "irrigation_fail_safe_duration", "measure_water_usage_duration", "meter_water"
+        "onoff",
+        "alarm_water",
+        "alarm_water_shortage",
+        "child_lock",
+        "measure_battery",
+        "irrigation_mode",
+        "irrigation_duration",
+        "irrigation_amount",
+        "irrigation_fail_safe_duration",
+        "measure_water_usage_duration",
+        "meter_water"
       ],
       "energy": {
-        "batteries": ["OTHER"]
+        "batteries": [
+          "OTHER"
+        ]
       },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "zigbee"
+      ],
+      "images": {
+        "small": "/drivers/hydro-one/assets/images/small.png",
+        "large": "/drivers/hydro-one/assets/images/large.png"
+      },
+      "zigbee": {
+        "manufacturerName": [
+          "SONOFF"
+        ],
+        "productId": [
+          "SWV-ZFU",
+          "SWV-ZFE",
+          "SWV-ZNU",
+          "SWV-ZNE"
+        ],
+        "endpoints": {
+          "1": {
+            "clusters": [
+              0,
+              1,
+              3,
+              6,
+              64529
+            ],
+            "bindings": [
+              1,
+              6,
+              64529
+            ]
+          }
+        },
+        "learnmode": {
+          "instruction": {
+            "en": "Put your Hydro One in pairing mode (see the manufacturer's manual), then press the button below.",
+            "fr": "Mettez votre Hydro One en mode appairage (voir le manuel du fabricant), puis appuyez sur le bouton ci-dessous."
+          }
+        }
+      },
+      "id": "hydro-one",
       "settings": [
         {
           "type": "group",
@@ -148,36 +117,141 @@
               },
               "value": "liter",
               "values": [
-                { "id": "liter", "label": { "en": "Liter", "fr": "Litre" } },
-                { "id": "us_gallon", "label": { "en": "US gallon", "fr": "Gallon US" } },
-                { "id": "imperial_gallon", "label": { "en": "Imperial gallon", "fr": "Gallon impérial" } }
+                {
+                  "id": "liter",
+                  "label": {
+                    "en": "Liter",
+                    "fr": "Litre"
+                  }
+                },
+                {
+                  "id": "us_gallon",
+                  "label": {
+                    "en": "US gallon",
+                    "fr": "Gallon US"
+                  }
+                },
+                {
+                  "id": "imperial_gallon",
+                  "label": {
+                    "en": "Imperial gallon",
+                    "fr": "Gallon impérial"
+                  }
+                }
               ]
             }
           ]
         }
-      ],
-      "platforms": ["local"],
-      "connectivity": ["zigbee"],
-      "images": {
-        "small": "/drivers/hydro-one/assets/images/small.png",
-        "large": "/drivers/hydro-one/assets/images/large.png"
+      ]
+    }
+  ],
+  "capabilities": {
+    "alarm_water_shortage": {
+      "type": "boolean",
+      "title": {
+        "en": "Water shortage",
+        "fr": "Manque d'eau"
       },
-      "zigbee": {
-        "manufacturerName": ["SONOFF"],
-        "productId": ["SWV-ZFU", "SWV-ZFE", "SWV-ZNU", "SWV-ZNE"],
-        "endpoints": {
-          "1": {
-            "clusters": [0, 1, 3, 6, 64529],
-            "bindings": [1, 6, 64529]
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": false,
+      "icon": "/assets/alarm_water_shortage.svg"
+    },
+    "child_lock": {
+      "type": "boolean",
+      "title": {
+        "en": "Child lock",
+        "fr": "Verrouillage enfant"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/child_lock.svg"
+    },
+    "irrigation_amount": {
+      "type": "number",
+      "title": {
+        "en": "Manual irrigation amount",
+        "fr": "Quantité d'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "min": 1,
+      "max": 10000,
+      "step": 1
+    },
+    "irrigation_duration": {
+      "type": "number",
+      "title": {
+        "en": "Manual irrigation duration",
+        "fr": "Durée d'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": {
+        "en": "min"
+      },
+      "min": 1,
+      "max": 719,
+      "step": 1
+    },
+    "irrigation_fail_safe_duration": {
+      "type": "number",
+      "title": {
+        "en": "Manual irrigation fail-safe duration",
+        "fr": "Durée de sécurité de l'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": {
+        "en": "min"
+      },
+      "min": 1,
+      "max": 719,
+      "step": 1
+    },
+    "irrigation_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Manual irrigation mode",
+        "fr": "Mode d'irrigation manuelle"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        {
+          "id": "duration",
+          "title": {
+            "en": "Duration",
+            "fr": "Durée"
           }
         },
-        "learnmode": {
-          "instruction": {
-            "en": "Put your Hydro One in pairing mode (see the manufacturer's manual), then press the button below.",
-            "fr": "Mettez votre Hydro One en mode appairage (voir le manuel du fabricant), puis appuyez sur le bouton ci-dessous."
+        {
+          "id": "volume",
+          "title": {
+            "en": "Volume",
+            "fr": "Volume"
           }
         }
+      ]
+    },
+    "measure_water_usage_duration": {
+      "type": "number",
+      "title": {
+        "en": "Last watering duration",
+        "fr": "Durée du dernier arrosage"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "min"
       }
     }
-  ]
+  }
 }

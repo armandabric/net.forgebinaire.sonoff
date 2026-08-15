@@ -1,0 +1,26 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Manual irrigation mode",
+    "fr": "Mode d'irrigation manuelle"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "values": [
+    {
+      "id": "duration",
+      "title": {
+        "en": "Duration",
+        "fr": "Durée"
+      }
+    },
+    {
+      "id": "volume",
+      "title": {
+        "en": "Volume",
+        "fr": "Volume"
+      }
+    }
+  ]
+}
