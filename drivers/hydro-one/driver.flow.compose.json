@@ -1,0 +1,57 @@
+{
+  "actions": [
+    {
+      "id": "water_for_duration",
+      "title": {
+        "en": "Water for a duration",
+        "fr": "Arroser pendant une durée"
+      },
+      "titleFormatted": {
+        "en": "Water for [[duration]] minutes",
+        "fr": "Arroser pendant [[duration]] minutes"
+      },
+      "args": [
+        {
+          "name": "duration",
+          "type": "number",
+          "title": { "en": "Duration", "fr": "Durée" },
+          "min": 1,
+          "max": 719,
+          "step": 1,
+          "label": { "en": "min", "fr": "min" }
+        }
+      ]
+    },
+    {
+      "id": "water_for_volume",
+      "title": {
+        "en": "Water a volume",
+        "fr": "Arroser un volume"
+      },
+      "titleFormatted": {
+        "en": "Water [[amount]] L, fail-safe after [[fail_safe_duration]] min",
+        "fr": "Arroser [[amount]] L, sécurité après [[fail_safe_duration]] min"
+      },
+      "args": [
+        {
+          "name": "amount",
+          "type": "number",
+          "title": { "en": "Amount", "fr": "Quantité" },
+          "min": 1,
+          "max": 10000,
+          "step": 1,
+          "label": { "en": "L", "fr": "L" }
+        },
+        {
+          "name": "fail_safe_duration",
+          "type": "number",
+          "title": { "en": "Fail-safe duration", "fr": "Durée de sécurité" },
+          "min": 1,
+          "max": 719,
+          "step": 1,
+          "label": { "en": "min", "fr": "min" }
+        }
+      ]
+    }
+  ]
+}

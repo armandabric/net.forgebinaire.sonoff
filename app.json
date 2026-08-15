@@ -31,6 +31,91 @@
     "name": "Armand Abric",
     "email": "armand@forgebinaire.net"
   },
+  "flow": {
+    "actions": [
+      {
+        "id": "water_for_duration",
+        "title": {
+          "en": "Water for a duration",
+          "fr": "Arroser pendant une durée"
+        },
+        "titleFormatted": {
+          "en": "Water for [[duration]] minutes",
+          "fr": "Arroser pendant [[duration]] minutes"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=hydro-one"
+          },
+          {
+            "name": "duration",
+            "type": "number",
+            "title": {
+              "en": "Duration",
+              "fr": "Durée"
+            },
+            "min": 1,
+            "max": 719,
+            "step": 1,
+            "label": {
+              "en": "min",
+              "fr": "min"
+            }
+          }
+        ]
+      },
+      {
+        "id": "water_for_volume",
+        "title": {
+          "en": "Water a volume",
+          "fr": "Arroser un volume"
+        },
+        "titleFormatted": {
+          "en": "Water [[amount]] L, fail-safe after [[fail_safe_duration]] min",
+          "fr": "Arroser [[amount]] L, sécurité après [[fail_safe_duration]] min"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=hydro-one"
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "title": {
+              "en": "Amount",
+              "fr": "Quantité"
+            },
+            "min": 1,
+            "max": 10000,
+            "step": 1,
+            "label": {
+              "en": "L",
+              "fr": "L"
+            }
+          },
+          {
+            "name": "fail_safe_duration",
+            "type": "number",
+            "title": {
+              "en": "Fail-safe duration",
+              "fr": "Durée de sécurité"
+            },
+            "min": 1,
+            "max": 719,
+            "step": 1,
+            "label": {
+              "en": "min",
+              "fr": "min"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -44,10 +129,6 @@
         "alarm_water_shortage",
         "child_lock",
         "measure_battery",
-        "irrigation_mode",
-        "irrigation_duration",
-        "irrigation_amount",
-        "irrigation_fail_safe_duration",
         "measure_water_usage_duration",
         "meter_water"
       ],
@@ -168,77 +249,6 @@
       "setable": true,
       "uiComponent": "toggle",
       "icon": "/assets/child_lock.svg"
-    },
-    "irrigation_amount": {
-      "type": "number",
-      "title": {
-        "en": "Manual irrigation amount",
-        "fr": "Quantité d'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "slider",
-      "min": 0,
-      "max": 10000,
-      "step": 1
-    },
-    "irrigation_duration": {
-      "type": "number",
-      "title": {
-        "en": "Manual irrigation duration",
-        "fr": "Durée d'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "slider",
-      "units": {
-        "en": "min"
-      },
-      "min": 0,
-      "max": 719,
-      "step": 1
-    },
-    "irrigation_fail_safe_duration": {
-      "type": "number",
-      "title": {
-        "en": "Manual irrigation fail-safe duration",
-        "fr": "Durée de sécurité de l'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "slider",
-      "units": {
-        "en": "min"
-      },
-      "min": 0,
-      "max": 719,
-      "step": 1
-    },
-    "irrigation_mode": {
-      "type": "enum",
-      "title": {
-        "en": "Manual irrigation mode",
-        "fr": "Mode d'irrigation manuelle"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "values": [
-        {
-          "id": "duration",
-          "title": {
-            "en": "Duration",
-            "fr": "Durée"
-          }
-        },
-        {
-          "id": "volume",
-          "title": {
-            "en": "Volume",
-            "fr": "Volume"
-          }
-        }
-      ]
     },
     "measure_water_usage_duration": {
       "type": "number",
