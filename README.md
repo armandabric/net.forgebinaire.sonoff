@@ -70,6 +70,13 @@ drivers/hydro-one/device.js     — capability <-> cluster wiring
 drivers/hydro-one/driver.js
 ```
 
+This app writes `app.json` directly rather than using `.homeycompose` +
+per-driver `driver.compose.json`/`driver.settings.compose.json` files (the
+Homey docs' usual recommendation). Compose is purely a build-time file-
+splitting convenience for larger apps — the resulting `app.json` schema is
+identical either way, so the driver's `settings` array lives inline here.
+Worth revisiting if this app's manifest grows unwieldy as a single file.
+
 ### The custom "Array" ZCL data type
 
 Several `sonoffHydro` attributes (`singleIrrigationSet`, and eventually the
