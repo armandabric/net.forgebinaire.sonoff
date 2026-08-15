@@ -39,8 +39,9 @@ single manual irrigation actually used, compare the value before and
 after, or watch `measure_water_usage_duration` for the run's duration.
 The device reports the raw volume in an unspecified unit; this app
 **assumes liters** (consistent with the rest of the protocol) and converts
-to m³ for `meter_water`. Not yet verified against a real, known volume of
-water — treat the absolute value with some skepticism until confirmed.
+to m³ for `meter_water`. A short manual test showed a plausible reading
+(~2 L for a brief run), which supports the assumption, but it hasn't been
+checked against a precisely measured volume yet.
 
 Not yet ported (present in the source ZHA quirk, not in this app):
 
