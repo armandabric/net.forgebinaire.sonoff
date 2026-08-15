@@ -29,8 +29,10 @@ Configuring and starting a watering run is done through two Flow actions
 instead (`drivers/hydro-one/driver.flow.compose.json`):
 
 - **Water for a duration** — argument: duration (1-719 min).
-- **Water a volume** — arguments: amount (1-10000 L) and fail-safe duration
-  (1-719 min, cuts the water off if the target volume is never reached).
+- **Water a volume** — arguments: amount (1-10000, in whatever unit the
+  device's `water_flow_unit` setting is currently set to — see below) and
+  fail-safe duration (1-719 min, cuts the water off if the target volume
+  is never reached).
 
 Both write the payload to `sonoffHydro.singleIrrigationSet` (`0x501D`) via
 `Device#startDurationIrrigation()` / `Device#startVolumeIrrigation()`
