@@ -146,3 +146,13 @@ Then pair the device from the Homey app. If pairing fails or an
 attribute/cluster doesn't match, capture the Zigbee interview log
 (Homey app → device → Zigbee settings → "Interview") and the
 `homey app run` console output.
+
+## Formatting
+
+Code is formatted with [Prettier](https://prettier.io/); CI
+(`.github/workflows/ci.yml`) fails the build if it isn't.
+
+```
+npm run format        # rewrite files in place
+npm run format:check  # check only, no changes (what CI runs)
+```

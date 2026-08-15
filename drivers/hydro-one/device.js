@@ -34,16 +34,24 @@ const WATER_FLOW_UNIT_TO_ZCL = { liter: 0, us_gallon: 1, imperial_gallon: 2 };
 const WATER_FLOW_UNIT_SETTING_DEFAULT = 'liter';
 
 const IRRIGATION_CONFIG_CAPABILITIES = [
-  'irrigation_mode', 'irrigation_duration', 'irrigation_amount', 'irrigation_fail_safe_duration',
+  'irrigation_mode',
+  'irrigation_duration',
+  'irrigation_amount',
+  'irrigation_fail_safe_duration',
 ];
 
 // Homey does not retroactively add capabilities introduced by an app
 // update to already-paired devices, so this full list is reconciled on
 // every init to migrate existing devices forward.
 const ALL_CAPABILITIES = [
-  'onoff', 'alarm_water', 'alarm_water_shortage', 'child_lock', 'measure_battery',
+  'onoff',
+  'alarm_water',
+  'alarm_water_shortage',
+  'child_lock',
+  'measure_battery',
   ...IRRIGATION_CONFIG_CAPABILITIES,
-  'measure_water_usage_duration', 'meter_water',
+  'measure_water_usage_duration',
+  'meter_water',
 ];
 
 // Capabilities removed from a previous version of this app, still present
@@ -55,7 +63,6 @@ const REMOVED_CAPABILITIES = ['irrigation_amount_unit'];
 const LITERS_PER_CUBIC_METER = 1000;
 
 class HydroOneDevice extends ZigBeeDevice {
-
   async onNodeInit({ zclNode }) {
     for (const capabilityId of ALL_CAPABILITIES) {
       if (!this.hasCapability(capabilityId)) {
@@ -84,9 +91,11 @@ class HydroOneDevice extends ZigBeeDevice {
     this.registerCapability('alarm_water_shortage', SonoffHydroCluster, {
       get: 'waterValveState',
       report: 'waterValveState',
-      reportParser: value => Boolean(
-        value & (WATER_VALVE_STATE_BIT.WATER_SHORTAGE | WATER_VALVE_STATE_BIT.WATER_SHORTAGE_CHANNEL_2),
-      ),
+      reportParser: value =>
+        Boolean(
+          value &
+          (WATER_VALVE_STATE_BIT.WATER_SHORTAGE | WATER_VALVE_STATE_BIT.WATER_SHORTAGE_CHANNEL_2),
+        ),
     });
 
     this.registerCapability('child_lock', SonoffHydroCluster, {
@@ -102,7 +111,9 @@ class HydroOneDevice extends ZigBeeDevice {
     // The capacity unit is a device setting rather than a capability (it's
     // rarely changed); push the current setting to the device on pairing.
     if (this.isFirstInit()) {
-      await this._writeWaterFlowUnit(this.getSetting('water_flow_unit') ?? WATER_FLOW_UNIT_SETTING_DEFAULT);
+      await this._writeWaterFlowUnit(
+        this.getSetting('water_flow_unit') ?? WATER_FLOW_UNIT_SETTING_DEFAULT,
+      );
     }
 
     // These four capabilities together configure a single manual irrigation
@@ -112,7 +123,8 @@ class HydroOneDevice extends ZigBeeDevice {
     this.registerCapability('irrigation_mode', SonoffHydroCluster, {
       get: 'singleIrrigationSet',
       report: 'singleIrrigationSet',
-      reportParser: value => IRRIGATION_MODE_FROM_ZCL[decodeSingleIrrigationPayload(value).irrigationMode] ?? 'duration',
+      reportParser: value =>
+        IRRIGATION_MODE_FROM_ZCL[decodeSingleIrrigationPayload(value).irrigationMode] ?? 'duration',
     });
 
     this.registerCapability('irrigation_duration', SonoffHydroCluster, {
@@ -135,15 +147,20 @@ class HydroOneDevice extends ZigBeeDevice {
 
     this.registerMultipleCapabilityListener(IRRIGATION_CONFIG_CAPABILITIES, async valueObj => {
       const payload = encodeSingleIrrigationPayload({
-        irrigationMode: IRRIGATION_MODE_TO_ZCL[
-          valueObj.irrigation_mode ?? this.getCapabilityValue('irrigation_mode')
-        ],
-        totalDurationMin: valueObj.irrigation_duration ?? this.getCapabilityValue('irrigation_duration'),
+        irrigationMode:
+          IRRIGATION_MODE_TO_ZCL[
+            valueObj.irrigation_mode ?? this.getCapabilityValue('irrigation_mode')
+          ],
+        totalDurationMin:
+          valueObj.irrigation_duration ?? this.getCapabilityValue('irrigation_duration'),
         amount: valueObj.irrigation_amount ?? this.getCapabilityValue('irrigation_amount'),
-        failSafeDurationMin: valueObj.irrigation_fail_safe_duration
-          ?? this.getCapabilityValue('irrigation_fail_safe_duration'),
+        failSafeDurationMin:
+          valueObj.irrigation_fail_safe_duration ??
+          this.getCapabilityValue('irrigation_fail_safe_duration'),
       });
-      await this.zclNode.endpoints[1].clusters.sonoffHydro.writeAttributes({ singleIrrigationSet: payload });
+      await this.zclNode.endpoints[1].clusters.sonoffHydro.writeAttributes({
+        singleIrrigationSet: payload,
+      });
     });
 
     this.registerCapability('measure_water_usage_duration', SonoffHydroCluster, {
@@ -167,10 +184,12 @@ class HydroOneDevice extends ZigBeeDevice {
 
   async _writeWaterFlowUnit(unit) {
     await this.zclNode.endpoints[1].clusters.sonoffHydro
-      .writeAttributes({ unitOfWaterFlow: WATER_FLOW_UNIT_TO_ZCL[unit] ?? WATER_FLOW_UNIT_TO_ZCL[WATER_FLOW_UNIT_SETTING_DEFAULT] })
+      .writeAttributes({
+        unitOfWaterFlow:
+          WATER_FLOW_UNIT_TO_ZCL[unit] ?? WATER_FLOW_UNIT_TO_ZCL[WATER_FLOW_UNIT_SETTING_DEFAULT],
+      })
       .catch(err => this.error('Error: could not write water flow unit', err));
   }
-
 }
 
 module.exports = HydroOneDevice;
