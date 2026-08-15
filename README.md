@@ -93,6 +93,17 @@ automatically every time (confirmed by running `homey app compose` to
 migrate this repo from a hand-written `app.json`, then diffing the
 regenerated output against the original — semantically identical).
 
+`.homeycompose/capabilities/irrigation_mode.json` /
+`irrigation_duration.json` / `irrigation_amount.json` /
+`irrigation_fail_safe_duration.json` still exist despite no driver
+listing them anymore (manual irrigation moved to Flow actions - see
+below). `Device#removeCapability()` needs a capability ID to still be a
+recognized definition to deregister it from an already-paired device;
+deleting the definition entirely made that migration step 404
+(`Invalid Capability`) on real hardware instead of cleaning up the
+device. Leave these files in place - deleting them is only safe once no
+paired device can still be carrying the capability.
+
 ### The custom "Array" ZCL data type
 
 Several `sonoffHydro` attributes (`singleIrrigationSet`, and eventually the

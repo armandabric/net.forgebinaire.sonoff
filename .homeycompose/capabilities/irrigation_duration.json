@@ -1,0 +1,16 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Manual irrigation duration",
+    "fr": "Durée d'irrigation manuelle"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "units": {
+    "en": "min"
+  },
+  "min": 0,
+  "max": 719,
+  "step": 1
+}
