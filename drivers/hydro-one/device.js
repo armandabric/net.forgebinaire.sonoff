@@ -51,6 +51,13 @@ const REMOVED_CAPABILITIES = [
 // explicit unit for it. meter_water is conventionally m³ in Homey.
 const LITERS_PER_CUBIC_METER = 1000;
 
+// SWV-ZNU/ZNE have no flow meter and don't support Volume mode at the
+// firmware level, per the source quirk (they only get a Duration-only
+// irrigation plan mode). This driver pairs with them too (same cluster,
+// duration-only features), so the Volume Flow action needs to reject them
+// explicitly rather than silently sending a payload the firmware can't use.
+const DURATION_ONLY_PRODUCT_IDS = ['SWV-ZNU', 'SWV-ZNE'];
+
 class HydroOneDevice extends ZigBeeDevice {
   async onNodeInit({ zclNode }) {
     for (const capabilityId of ALL_CAPABILITIES) {
@@ -138,6 +145,12 @@ class HydroOneDevice extends ZigBeeDevice {
 
   // Used by the "water a volume" Flow action.
   async startVolumeIrrigation(amount, failSafeDurationMin) {
+    if (DURATION_ONLY_PRODUCT_IDS.includes(this.getSetting('zb_product_id'))) {
+      throw new Error(
+        'This Hydro One has no flow meter and does not support watering by volume - use "Water for a duration" instead.',
+      );
+    }
+
     const payload = encodeSingleIrrigationPayload({
       irrigationMode: SingleIrrigationMode.VOLUME,
       amount,

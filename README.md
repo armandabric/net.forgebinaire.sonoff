@@ -152,11 +152,14 @@ needs revisiting.
   every field into its valid range with a sane fallback, so a missing or
   out-of-range Flow argument never reaches the firmware as-is.
 - One driver (`hydro-one`) covers all four product IDs (`SWV-ZFU`/`ZFE`
-  with a flow meter, `SWV-ZNU`/`ZNE` without). The Python quirk uses two
-  separate device profiles for these — the no-flow-meter variants don't
-  support Volume mode at the firmware level. This app doesn't yet detect
-  or restrict that; it's only been tested against a flow-meter variant
-  (`SWV-ZFE`).
+  with a flow meter, `SWV-ZNU`/`ZNE` without) rather than the Python
+  quirk's two separate device profiles. The no-flow-meter variants don't
+  support Volume mode at the firmware level, so `Device#startVolumeIrrigation()`
+  rejects them (checked via `getSetting('zb_product_id')`, populated
+  automatically by `homey-zigbeedriver` for any paired Zigbee device) -
+  the "Water for a duration" Flow action still works on them. This
+  rejection is untested on real `SWV-ZNU`/`ZNE` hardware; only a
+  flow-meter variant (`SWV-ZFE`) has been tested so far.
 
 ## Testing
 
