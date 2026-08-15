@@ -10,7 +10,7 @@
   "units": {
     "en": "min"
   },
-  "min": 1,
+  "min": 0,
   "max": 719,
   "step": 1
 }

@@ -7,7 +7,7 @@
   "getable": true,
   "setable": true,
   "uiComponent": "slider",
-  "min": 1,
+  "min": 0,
   "max": 10000,
   "step": 1
 }

@@ -117,14 +117,16 @@ needs revisiting.
 ## Known simplifications vs. the source quirk
 
 - Reading `irrigation_duration` / `irrigation_amount` /
-  `irrigation_fail_safe_duration` always reflects the raw device value.
-  The Python quirk has an asymmetric rule that preserves the last non-zero
-  `amount`/`fail_safe_duration_min` across mode switches (since the
-  firmware always zeroes the fields not relevant to the current mode) but
-  does *not* apply the same preservation to `total_duration_min`. This app
-  doesn't replicate that: switching mode may show `0` for the
-  now-irrelevant field until it's set again. Protocol-wise this is
-  harmless — the firmware always receives valid, mode-consistent data.
+  `irrigation_fail_safe_duration` always reflects the raw device value
+  (their Homey capability `min` is `0` to allow this), including `0` for
+  the field the current mode doesn't use. The Python quirk has an
+  asymmetric rule that preserves the last non-zero `amount`/
+  `fail_safe_duration_min` across mode switches but does *not* apply the
+  same preservation to `total_duration_min`; this app doesn't replicate
+  that. Protocol-wise this stays safe on writes: `encodeSingleIrrigationPayload`
+  (`lib/sonoffIrrigation.js`) clamps every field into its valid range with a
+  sane fallback, so a stale `0` left over from the other mode (or a
+  capability that was never set) never reaches the firmware as-is.
 - One driver (`hydro-one`) covers all four product IDs (`SWV-ZFU`/`ZFE`
   with a flow meter, `SWV-ZNU`/`ZNE` without). The Python quirk uses two
   separate device profiles for these — the no-flow-meter variants don't
