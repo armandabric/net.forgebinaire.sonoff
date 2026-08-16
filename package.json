@@ -4,12 +4,13 @@
   "private": true,
   "main": "app.js",
   "scripts": {
-    "homey": "homey",
+    "dev": "homey app run",
     "build": "homey app build",
-    "validate": "homey app validate",
-    "run": "homey app run",
+    "homey": "homey",
+    "validate": "homey app validate --level verified",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "homey-zigbeedriver": ">=2.0.0",
