@@ -1,0 +1,34 @@
+{
+  "id": "net.forgebinaire.sonoff",
+  "version": "0.1.0",
+  "compatibility": ">=12.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "zigbee"
+  ],
+  "brandColor": "#0099CC",
+  "name": {
+    "en": "Sonoff Hydro",
+    "fr": "Sonoff Hydro"
+  },
+  "description": {
+    "en": "Control your Sonoff Zigbee smart water valves",
+    "fr": "Contrôle de vos vannes d'eau connectées Zigbee Sonoff"
+  },
+  "category": [
+    "appliances"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png"
+  },
+  "author": {
+    "name": "Armand Abric",
+    "email": "armand@forgebinaire.net"
+  },
+  "support": "mailto:armand@forgebinaire.net"
+}

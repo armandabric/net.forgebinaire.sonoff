@@ -1,0 +1,14 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Last watering duration",
+    "fr": "Durée du dernier arrosage"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "units": {
+    "en": "min",
+    "fr": "min"
+  }
+}

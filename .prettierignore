@@ -1,0 +1,13 @@
+node_modules/
+package-lock.json
+.claude/
+
+# Managed by the Homey CLI, not hand-edited - formatting is its concern,
+# not ours.
+app.json
+.homeybuild/
+.homeychangelog.json
+env.json
+
+# Prose, not code - avoid unrelated reflow diffs.
+*.md

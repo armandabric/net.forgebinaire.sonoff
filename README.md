@@ -1,1 +1,230 @@
-net.forgebinaire.sonoff
+# Sonoff Hydro (Homey)
+
+Homey app for the Sonoff Hydro One Zigbee smart water valve
+([SWV-ZFU / SWV-ZFE / SWV-ZNU / SWV-ZNE](https://sonoff.tech/fr-fr/products/sonoff-hydro-series-hydro-one-zigbee-smart-water-valve-swv-zfu-swv-zfe)),
+ported from Sonoff's official ZHA quirk (Python/zigpy, for Home Assistant)
+to the Homey Apps SDK (Node.js). The device isn't natively supported by
+Homey, and Sonoff only publishes a ZHA quirk — this app re-implements the
+same Zigbee protocol on top of `homey-zigbeedriver` / `zigbee-clusters`.
+The original quirk is kept in [`reference/`](reference/) as the source of
+truth for anything not yet ported.
+
+## Status
+
+Confirmed working on real hardware (Homey Pro, device model `SWV-ZFE`):
+
+| Capability | Cluster / attribute | Notes |
+|---|---|---|
+| `onoff` | standard `OnOff` (`0x0006`) | Opens/closes the valve |
+| `alarm_water` | `sonoffHydro.waterValveState` (`0x500C`, bit 1) | Leak alarm |
+| `alarm_water_shortage` | `sonoffHydro.waterValveState` (`0x500C`, bits 0 \| 4) | No-water alarm |
+| `child_lock` | `sonoffHydro.childLock` (`0x0000`) | |
+| `measure_battery` | standard `PowerConfiguration` (`0x0001`) | Device reports its own reporting config |
+| `measure_water_usage_duration` | `sonoffHydro.waterUsageDuration` (`0x501C`) | Duration of the last watering run, minutes. Not cumulative. |
+| `meter_water` | `sonoffHydro.waterUsageVolume` (`0x501B`) | Lifetime cumulative volume, m³. **Unit assumed** — see below. |
+
+Manual irrigation is deliberately **not** exposed as capabilities — the
+device tile only shows `onoff` plus the status capabilities above.
+Configuring and starting a watering run is done through two Flow actions
+instead (`drivers/hydro-one/driver.flow.compose.json`):
+
+- **Open the valve for a duration** — argument: duration (1-719 min).
+- **Open the valve for a volume** — arguments: amount in liters (1-10000) and fail-safe
+  duration (1-719 min, cuts the water off if the target volume is never
+  reached).
+
+Both write the payload to `sonoffHydro.singleIrrigationSet` (`0x501D`) via
+`Device#startDurationIrrigation()` / `Device#startVolumeIrrigation()`
+(`drivers/hydro-one/device.js`), then call
+`triggerCapabilityListener('onoff', true)` to open the valve — there is no
+separate "start irrigation" command in this cluster, opening the valve
+just runs whatever mode/duration/amount was last written. The listeners
+themselves are registered once in `driver.js` via
+`this.homey.flow.getActionCard(id).registerRunListener(...)`; Homey
+auto-injects the `device` argument for driver-scoped Flow cards, so it
+isn't declared explicitly in the compose file.
+
+The three custom capabilities (`alarm_water_shortage`, `child_lock`,
+`measure_water_usage_duration`) each get a Flow trigger card too
+(`alarm_water_shortage_true`/`_false`, `child_lock_true`/`_false`,
+`measure_water_usage_duration_changed`). These need no run listener or
+manual `.trigger()` call — Homey fires them automatically whenever
+`registerCapability()` updates the capability's value, as long as the
+IDs in `driver.flow.compose.json` match the convention
+(`<capability_id>_true`/`_false` for booleans, `<capability_id>_changed`
+with a same-named token for numbers/enums/strings). Standard
+capabilities (`onoff`, `alarm_water`, `measure_battery`, `meter_water`)
+already come with their own built-in Homey triggers, so none were added
+for those.
+
+`sonoffHydro.unitOfWaterFlow` (`0x5021`, which governs how the firmware
+interprets the volume argument) is neither a capability, a Flow argument,
+nor a setting — this app forces it to Liter once on pairing
+(`Device#_writeWaterFlowUnit()`) and never changes it again, so the
+"Open the valve for a volume" amount is always in liters.
+
+`meter_water` is a lifetime running total (per the source quirk's
+`TOTAL_INCREASING` state class), not a per-run value — to check how much a
+single manual irrigation actually used, compare the value before and
+after, or watch `measure_water_usage_duration` for the run's duration.
+The device reports the raw volume in an unspecified unit; this app
+**assumes liters** (consistent with the rest of the protocol) and converts
+to m³ for `meter_water`. A short manual test showed a plausible reading
+(~2 L for a brief run), which supports the assumption, but it hasn't been
+checked against a precisely measured volume yet.
+
+Deliberately **not** ported, and not planned - all three below are
+present in the source ZHA quirk but are being left out on purpose:
+
+- The device's own 6 scheduled irrigation plans (day/time, repeat mode,
+  weekday mask).
+- Seasonal (monthly) watering adjustment (only meaningful for the
+  scheduled plans above - has no effect on manual irrigation).
+- Manual rain delay (`SonoffManualRainDelayConfigCluster` in the source
+  quirk) - despite the name, there's no rain sensor involved; it's a
+  user-triggered "pause for N hours" command. The only thing it pauses
+  is the device's own scheduled plans above, so without those it has no
+  effect on anything this app does (manual irrigation is unaffected).
+
+Scheduling is Homey's job, not this app's: the Homey ecosystem already
+has a first-class way to run something on a schedule - Homey's own Flow
+system (time triggers, "every day at..." apps, etc.) - which can already
+call the "Open the valve for a duration"/"a volume" Flow actions this
+app provides. Reimplementing the device's own on-device scheduler would
+duplicate that, is a poor fit for Homey's capability/Flow model (a
+28-byte payload per plan, 6 plans, weekday masks, repeat modes - no
+native equivalent of Home Assistant's per-field entities), and would
+only work in parallel with/independently of whatever the user already
+built in Flow. All three remain protocol-wise understood in the source
+quirk if this decision is ever revisited.
+
+## Architecture
+
+```
+.homeycompose/app.json                      — app-level manifest (id, name, images, author, ...)
+.homeycompose/capabilities/*.json           — custom capability definitions
+drivers/hydro-one/driver.compose.json       — driver manifest: capabilities, class, Zigbee pairing config
+drivers/hydro-one/driver.flow.compose.json  — Flow action cards (manual irrigation)
+app.json                                    — generated by `homey app build`/`run`/`validate`; do not edit directly
+lib/SonoffHydroCluster.js                   — the 0xFC11 cluster: attribute/command defs
+lib/sonoffIrrigation.js                     — single-irrigation 12-byte payload codec
+drivers/hydro-one/device.js                 — capability <-> cluster wiring, Flow action implementations
+drivers/hydro-one/driver.js                 — Flow action run listener registration
+```
+
+Standard [Homey Compose](https://apps.developer.homey.app/) layout: edit
+the files under `.homeycompose/` and `drivers/hydro-one/*.compose.json`,
+never `app.json` itself — `homey app run`/`validate`/`build` regenerate it
+automatically every time (confirmed by running `homey app compose` to
+migrate this repo from a hand-written `app.json`, then diffing the
+regenerated output against the original — semantically identical).
+
+Manual irrigation used to be exposed as capabilities
+(`irrigation_mode`/`irrigation_duration`/`irrigation_amount`/
+`irrigation_fail_safe_duration`) before moving to Flow actions - see
+below. Their `.homeycompose/capabilities/*.json` definitions were kept
+around for a while after that so `Device#removeCapability()` (which
+needs a capability ID to still be a recognized definition to
+deregister it from an already-paired device) could clean up the one
+device that had paired with the older version; deleting the
+definitions outright made that migration step 404 (`Invalid
+Capability`) on real hardware instead. Removed for good once that
+device had re-initialized at least once past the fix - this app isn't
+published, so no other paired device could ever have carried them.
+
+### The custom "Array" ZCL data type
+
+Several `sonoffHydro` attributes (`singleIrrigationSet`, and eventually the
+irrigation plan / quarterly adjustment ones) are wrapped in the generic ZCL
+"Array" data type (id `0x48`): 1 byte element type + 2 byte little-endian
+element count + N element bytes. `zigbee-clusters`' underlying
+`@athombv/data-types` package does **not** implement this type — it's
+commented out in its source. This is why even Sonoff's own Python quirk
+needed a manual low-level write helper
+(`write_sonoff_array_attribute`) instead of a normal attribute write.
+
+`lib/SonoffHydroCluster.js` defines this type by hand (`sonoffByteArray`),
+matching the exact wire format zigpy's `foundation.Array` /
+`t.LVList[uint8, uint16]` combination produces. It was verified byte-for-byte
+in isolation (encode → wire bytes → decode round-trip) before ever touching
+real hardware — see the git history for the verification script if this
+needs revisiting.
+
+## Confirmed facts (from a real Zigbee interview, `SWV-ZFE`)
+
+- Endpoint **1** carries `basic`, `powerConfiguration`, `identify`, `onOff`,
+  `pollControl`, cluster `64599` (`0xFC57`, undocumented — not used by this
+  app), and `sonoffHydro` (`64529` / `0xFC11`).
+- The device is a **battery-powered sleepy end device**
+  (`receiveWhenIdle: false`, poll-control check-in ≈ 1 hour). On-demand
+  attribute reads work when the device happens to be awake, but active ZCL
+  "configure reporting" is **rejected** by the firmware
+  (`UNSUPPORTED_ATTRIBUTE`) for `waterValveState` — the device sends
+  unsolicited reports on its own instead, so this app only listens for
+  those rather than requesting a reporting config.
+- Battery type/count is unknown; `driver.compose.json` declares
+  `energy.batteries: ["OTHER"]` as a placeholder.
+
+## Known simplifications vs. the source quirk
+
+- Manual irrigation is write-only from Homey's side: the two Flow actions
+  send a fresh, complete `singleIrrigationSet` payload each run (built
+  entirely from that Flow action's own arguments) rather than reading back
+  or displaying the device's current configuration anywhere. The Python
+  quirk's local state tracking (e.g. preserving the last non-zero
+  `amount`/`fail_safe_duration_min` across mode switches) doesn't apply
+  here since there's no persistent UI state to preserve.
+  `encodeSingleIrrigationPayload` (`lib/sonoffIrrigation.js`) still clamps
+  every field into its valid range with a sane fallback, so a missing or
+  out-of-range Flow argument never reaches the firmware as-is.
+- One driver (`hydro-one`) covers all four product IDs (`SWV-ZFU`/`ZFE`
+  with a flow meter, `SWV-ZNU`/`ZNE` without) rather than the Python
+  quirk's two separate device profiles. The no-flow-meter variants don't
+  support Volume mode at the firmware level, so `Device#startVolumeIrrigation()`
+  rejects them (checked via `getSetting('zb_product_id')`, populated
+  automatically by `homey-zigbeedriver` for any paired Zigbee device) -
+  the "Open the valve for a duration" Flow action still works on them. This
+  rejection is untested on real `SWV-ZNU`/`ZNE` hardware; only a
+  flow-meter variant (`SWV-ZFE`) has been tested so far.
+
+  This means the "Open the valve for a volume" Flow card is still offered
+  in the UI on no-flow-meter devices and only fails when run. Hiding it
+  outright turns out to need more than it looks like: Homey's Flow card
+  `"$filter": "capabilities=..."` (apps.developer.homey.app/the-basics/flow.md)
+  looks like the fix, but the docs explicitly warn that per-device
+  `addCapability`/`removeCapability` calls (which is how `meter_water`
+  would have to be toggled per product ID within this single driver)
+  **don't** update that filter - it only reflects each driver's static,
+  manifest-declared capability list. Actually hiding the card requires
+  splitting `hydro-one` into two drivers (flow-meter vs. duration-only),
+  mirroring the source quirk's two cluster classes
+  (`SonoffSingleIrrigationConfigCluster` vs.
+  `SonoffDurationOnlySingleIrrigationConfigCluster`), each with its own
+  `driver.compose.json` capabilities list and `driver.flow.compose.json`
+  (only the flow-meter driver would define `water_for_volume`). Deferred
+  for now - the runtime rejection above is the interim safeguard.
+
+## Testing
+
+Requires a **Homey Pro** (Zigbee radio — Homey Cloud/Bridge cannot pair
+Zigbee devices) and the [Homey CLI](https://apps.developer.homey.app/):
+
+```
+npm install
+npm run homey app run
+```
+
+Then pair the device from the Homey app. If pairing fails or an
+attribute/cluster doesn't match, capture the Zigbee interview log
+(Homey app → device → Zigbee settings → "Interview") and the
+`homey app run` console output.
+
+## Formatting
+
+Code is formatted with [Prettier](https://prettier.io/); CI
+(`.github/workflows/ci.yml`) fails the build if it isn't.
+
+```
+npm run format        # rewrite files in place
+npm run format:check  # check only, no changes (what CI runs)
+```

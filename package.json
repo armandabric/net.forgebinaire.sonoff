@@ -1,0 +1,23 @@
+{
+  "name": "net.forgebinaire.sonoff",
+  "version": "0.1.0",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "dev": "homey app run",
+    "build": "homey app build",
+    "homey": "homey",
+    "validate": "homey app validate --level verified",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "homey-zigbeedriver": ">=2.0.0",
+    "zigbee-clusters": ">=2.0.0"
+  },
+  "devDependencies": {
+    "homey": "^4.4.2",
+    "prettier": "^3.9.6"
+  }
+}

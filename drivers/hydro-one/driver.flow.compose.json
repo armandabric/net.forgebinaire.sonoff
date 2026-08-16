@@ -1,0 +1,114 @@
+{
+  "triggers": [
+    {
+      "id": "alarm_water_shortage_true",
+      "title": {
+        "en": "Water shortage detected",
+        "fr": "Manque d'eau détecté"
+      },
+      "hint": {
+        "en": "Triggers when the water shortage alarm turns on.",
+        "fr": "Se déclenche quand l'alarme de manque d'eau s'active."
+      }
+    },
+    {
+      "id": "alarm_water_shortage_false",
+      "title": {
+        "en": "Water shortage resolved",
+        "fr": "Manque d'eau résolu"
+      },
+      "hint": {
+        "en": "Triggers when the water shortage alarm turns off.",
+        "fr": "Se déclenche quand l'alarme de manque d'eau se désactive."
+      }
+    },
+    {
+      "id": "child_lock_true",
+      "title": {
+        "en": "Child lock turned on",
+        "fr": "Verrouillage enfant activé"
+      }
+    },
+    {
+      "id": "child_lock_false",
+      "title": {
+        "en": "Child lock turned off",
+        "fr": "Verrouillage enfant désactivé"
+      }
+    },
+    {
+      "id": "measure_water_usage_duration_changed",
+      "title": {
+        "en": "Last watering duration updated",
+        "fr": "Durée du dernier arrosage mise à jour"
+      },
+      "hint": {
+        "en": "Triggers when a watering run finishes and its duration is reported.",
+        "fr": "Se déclenche à la fin d'un arrosage, quand sa durée est rapportée."
+      },
+      "tokens": [
+        {
+          "name": "measure_water_usage_duration",
+          "type": "number",
+          "title": { "en": "Duration", "fr": "Durée" },
+          "example": 10
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "water_for_duration",
+      "title": {
+        "en": "Open the valve for a duration",
+        "fr": "Ouvrir la vanne pendant une durée"
+      },
+      "titleFormatted": {
+        "en": "Open the valve for [[duration]] minutes",
+        "fr": "Ouvrir la vanne pendant [[duration]] minutes"
+      },
+      "args": [
+        {
+          "name": "duration",
+          "type": "number",
+          "title": { "en": "Duration", "fr": "Durée" },
+          "min": 1,
+          "max": 719,
+          "step": 1,
+          "label": { "en": "min", "fr": "min" }
+        }
+      ]
+    },
+    {
+      "id": "water_for_volume",
+      "title": {
+        "en": "Open the valve for a volume",
+        "fr": "Ouvrir la vanne pour un volume"
+      },
+      "titleFormatted": {
+        "en": "Open the valve for [[amount]] L or [[fail_safe_duration]] min",
+        "fr": "Ouvrir la vanne pour [[amount]] L ou [[fail_safe_duration]] min"
+      },
+      "args": [
+        {
+          "name": "amount",
+          "type": "number",
+          "title": { "en": "Amount", "fr": "Quantité" },
+          "min": 1,
+          "max": 10000,
+          "step": 1,
+          "label": { "en": "L", "fr": "L" }
+        },
+        {
+          "name": "fail_safe_duration",
+          "type": "number",
+          "title": { "en": "Fail-safe duration", "fr": "Durée de sécurité" },
+          "min": 1,
+          "max": 719,
+          "step": 1,
+          "label": { "en": "min", "fr": "min" }
+        }
+      ]
+    }
+  ]
+}
