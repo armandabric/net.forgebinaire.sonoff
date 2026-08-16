@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const { ZigBeeDevice } = require('homey-zigbeedriver');
-const { CLUSTER } = require('zigbee-clusters');
+const { ZigBeeDevice } = require("homey-zigbeedriver");
+const { CLUSTER } = require("zigbee-clusters");
 
-const SonoffHydroCluster = require('../../lib/SonoffHydroCluster');
+const SonoffHydroCluster = require("../../lib/SonoffHydroCluster");
 const {
   SingleIrrigationMode,
   encodeSingleIrrigationPayload,
-} = require('../../lib/sonoffIrrigation');
+} = require("../../lib/sonoffIrrigation");
 
 // Bit layout of the sonoffHydro `waterValveState` attribute (0x500C), as
 // documented in Sonoff's ZHA quirk: several alarm conditions are packed
@@ -26,13 +26,13 @@ const ZCL_UNIT_OF_WATER_FLOW_LITER = 0;
 // update to already-paired devices, so this full list is reconciled on
 // every init to migrate existing devices forward.
 const ALL_CAPABILITIES = [
-  'onoff',
-  'alarm_water',
-  'alarm_water_shortage',
-  'child_lock',
-  'measure_battery',
-  'measure_water_usage_duration',
-  'meter_water',
+  "onoff",
+  "alarm_water",
+  "alarm_water_shortage",
+  "child_lock",
+  "measure_battery",
+  "measure_water_usage_duration",
+  "meter_water",
 ];
 
 // Liters assumed for waterUsageVolume - the source quirk declares no
@@ -44,7 +44,7 @@ const LITERS_PER_CUBIC_METER = 1000;
 // irrigation plan mode). This driver pairs with them too (same cluster,
 // duration-only features), so the Volume Flow action needs to reject them
 // explicitly rather than silently sending a payload the firmware can't use.
-const DURATION_ONLY_PRODUCT_IDS = ['SWV-ZNU', 'SWV-ZNE'];
+const DURATION_ONLY_PRODUCT_IDS = ["SWV-ZNU", "SWV-ZNE"];
 
 class HydroOneDevice extends ZigBeeDevice {
   async onNodeInit({ zclNode }) {
@@ -56,36 +56,38 @@ class HydroOneDevice extends ZigBeeDevice {
 
     // Confirmed via Zigbee interview: OnOff and the Sonoff cluster (0xFC11)
     // both live on endpoint 1.
-    this.registerCapability('onoff', CLUSTER.ON_OFF);
+    this.registerCapability("onoff", CLUSTER.ON_OFF);
 
     // The firmware rejects ZCL "configure reporting" for waterValveState
     // (UNSUPPORTED_ATTRIBUTE) but sends unsolicited reports on its own, so
     // we only listen for reports rather than requesting a reporting config.
-    this.registerCapability('alarm_water', SonoffHydroCluster, {
-      get: 'waterValveState',
-      report: 'waterValveState',
-      reportParser: value => Boolean(value & WATER_VALVE_STATE_BIT.WATER_LEAKAGE),
+    this.registerCapability("alarm_water", SonoffHydroCluster, {
+      get: "waterValveState",
+      report: "waterValveState",
+      reportParser: (value) =>
+        Boolean(value & WATER_VALVE_STATE_BIT.WATER_LEAKAGE),
     });
 
-    this.registerCapability('alarm_water_shortage', SonoffHydroCluster, {
-      get: 'waterValveState',
-      report: 'waterValveState',
-      reportParser: value =>
+    this.registerCapability("alarm_water_shortage", SonoffHydroCluster, {
+      get: "waterValveState",
+      report: "waterValveState",
+      reportParser: (value) =>
         Boolean(
           value &
-          (WATER_VALVE_STATE_BIT.WATER_SHORTAGE | WATER_VALVE_STATE_BIT.WATER_SHORTAGE_CHANNEL_2),
+          (WATER_VALVE_STATE_BIT.WATER_SHORTAGE |
+            WATER_VALVE_STATE_BIT.WATER_SHORTAGE_CHANNEL_2),
         ),
     });
 
-    this.registerCapability('child_lock', SonoffHydroCluster, {
-      get: 'childLock',
-      set: 'writeAttributes',
-      setParser: value => ({ childLock: value }),
-      report: 'childLock',
-      reportParser: value => Boolean(value),
+    this.registerCapability("child_lock", SonoffHydroCluster, {
+      get: "childLock",
+      set: "writeAttributes",
+      setParser: (value) => ({ childLock: value }),
+      report: "childLock",
+      reportParser: (value) => Boolean(value),
     });
 
-    this.registerCapability('measure_battery', CLUSTER.POWER_CONFIGURATION);
+    this.registerCapability("measure_battery", CLUSTER.POWER_CONFIGURATION);
 
     // The app only ever sends/reads amounts in liters, so force the device
     // into that unit once on pairing rather than exposing it as a setting.
@@ -93,16 +95,20 @@ class HydroOneDevice extends ZigBeeDevice {
       await this._writeWaterFlowUnit();
     }
 
-    this.registerCapability('measure_water_usage_duration', SonoffHydroCluster, {
-      get: 'waterUsageDuration',
-      report: 'waterUsageDuration',
-      reportParser: value => value,
-    });
+    this.registerCapability(
+      "measure_water_usage_duration",
+      SonoffHydroCluster,
+      {
+        get: "waterUsageDuration",
+        report: "waterUsageDuration",
+        reportParser: (value) => value,
+      },
+    );
 
-    this.registerCapability('meter_water', SonoffHydroCluster, {
-      get: 'waterUsageVolume',
-      report: 'waterUsageVolume',
-      reportParser: value => value / LITERS_PER_CUBIC_METER,
+    this.registerCapability("meter_water", SonoffHydroCluster, {
+      get: "waterUsageVolume",
+      report: "waterUsageVolume",
+      reportParser: (value) => value / LITERS_PER_CUBIC_METER,
     });
   }
 
@@ -115,12 +121,12 @@ class HydroOneDevice extends ZigBeeDevice {
     await this.zclNode.endpoints[1].clusters.sonoffHydro.writeAttributes({
       singleIrrigationSet: payload,
     });
-    await this.triggerCapabilityListener('onoff', true);
+    await this.triggerCapabilityListener("onoff", true);
   }
 
   // Used by the "water a volume" Flow action.
   async startVolumeIrrigation(amount, failSafeDurationMin) {
-    if (DURATION_ONLY_PRODUCT_IDS.includes(this.getSetting('zb_product_id'))) {
+    if (DURATION_ONLY_PRODUCT_IDS.includes(this.getSetting("zb_product_id"))) {
       throw new Error(
         'This Hydro One has no flow meter and does not support watering by volume - use "Water for a duration" instead.',
       );
@@ -134,13 +140,15 @@ class HydroOneDevice extends ZigBeeDevice {
     await this.zclNode.endpoints[1].clusters.sonoffHydro.writeAttributes({
       singleIrrigationSet: payload,
     });
-    await this.triggerCapabilityListener('onoff', true);
+    await this.triggerCapabilityListener("onoff", true);
   }
 
   async _writeWaterFlowUnit() {
     await this.zclNode.endpoints[1].clusters.sonoffHydro
       .writeAttributes({ unitOfWaterFlow: ZCL_UNIT_OF_WATER_FLOW_LITER })
-      .catch(err => this.error('Error: could not write water flow unit', err));
+      .catch((err) =>
+        this.error("Error: could not write water flow unit", err),
+      );
   }
 }
 

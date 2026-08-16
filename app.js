@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
-const Homey = require('homey');
+const Homey = require("homey");
 
 class SonoffApp extends Homey.App {
   async onInit() {
-    this.log('Sonoff app has been initialized');
+    this.log("Sonoff app has been initialized");
   }
 }
 
