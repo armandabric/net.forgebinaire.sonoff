@@ -28,7 +28,10 @@ device tile only shows `onoff` plus the status capabilities above.
 Configuring and starting a watering run is done through two Flow actions
 instead (`drivers/hydro-one/driver.flow.compose.json`):
 
-- **Water for a duration** — argument: duration (1-719 min).
+- **Water for a duration** — uses Homey's built-in Action Card `duration`
+  widget (`"duration": true` in the compose file) rather than a plain
+  `number` argument; the run listener receives it in milliseconds and
+  converts to minutes before calling `startDurationIrrigation()`.
 - **Water a volume** — arguments: amount in liters (1-10000) and fail-safe
   duration (1-719 min, cuts the water off if the target volume is never
   reached).
