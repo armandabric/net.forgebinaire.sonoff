@@ -74,8 +74,8 @@
           "fr": "Arroser un volume"
         },
         "titleFormatted": {
-          "en": "Water [[amount]] (device volume unit), fail-safe after [[fail_safe_duration]] min",
-          "fr": "Arroser [[amount]] (unité de l'appareil), sécurité après [[fail_safe_duration]] min"
+          "en": "Water [[amount]] L, fail-safe after [[fail_safe_duration]] min",
+          "fr": "Arroser [[amount]] L, sécurité après [[fail_safe_duration]] min"
         },
         "args": [
           {
@@ -87,12 +87,16 @@
             "name": "amount",
             "type": "number",
             "title": {
-              "en": "Amount (device volume unit)",
-              "fr": "Quantité (unité de l'appareil)"
+              "en": "Amount",
+              "fr": "Quantité"
             },
             "min": 1,
             "max": 10000,
-            "step": 1
+            "step": 1,
+            "label": {
+              "en": "L",
+              "fr": "L"
+            }
           },
           {
             "name": "fail_safe_duration",
@@ -177,50 +181,7 @@
           }
         }
       },
-      "id": "hydro-one",
-      "settings": [
-        {
-          "type": "group",
-          "label": {
-            "en": "Irrigation",
-            "fr": "Irrigation"
-          },
-          "children": [
-            {
-              "id": "water_flow_unit",
-              "type": "dropdown",
-              "label": {
-                "en": "Volume unit",
-                "fr": "Unité des volumes"
-              },
-              "value": "liter",
-              "values": [
-                {
-                  "id": "liter",
-                  "label": {
-                    "en": "Liter",
-                    "fr": "Litre"
-                  }
-                },
-                {
-                  "id": "us_gallon",
-                  "label": {
-                    "en": "US gallon",
-                    "fr": "Gallon US"
-                  }
-                },
-                {
-                  "id": "imperial_gallon",
-                  "label": {
-                    "en": "Imperial gallon",
-                    "fr": "Gallon impérial"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "id": "hydro-one"
     }
   ],
   "capabilities": {

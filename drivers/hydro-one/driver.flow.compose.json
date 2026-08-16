@@ -29,17 +29,18 @@
         "fr": "Arroser un volume"
       },
       "titleFormatted": {
-        "en": "Water [[amount]] (device volume unit), fail-safe after [[fail_safe_duration]] min",
-        "fr": "Arroser [[amount]] (unité de l'appareil), sécurité après [[fail_safe_duration]] min"
+        "en": "Water [[amount]] L, fail-safe after [[fail_safe_duration]] min",
+        "fr": "Arroser [[amount]] L, sécurité après [[fail_safe_duration]] min"
       },
       "args": [
         {
           "name": "amount",
           "type": "number",
-          "title": { "en": "Amount (device volume unit)", "fr": "Quantité (unité de l'appareil)" },
+          "title": { "en": "Amount", "fr": "Quantité" },
           "min": 1,
           "max": 10000,
-          "step": 1
+          "step": 1,
+          "label": { "en": "L", "fr": "L" }
         },
         {
           "name": "fail_safe_duration",

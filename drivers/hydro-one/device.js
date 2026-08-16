@@ -18,10 +18,9 @@ const WATER_VALVE_STATE_BIT = {
   WATER_SHORTAGE_CHANNEL_2: 1 << 4,
 };
 
-// IrrigationAmountUnit enum (the real, user-facing unit attribute),
-// configured via the device settings page rather than a capability.
-const WATER_FLOW_UNIT_TO_ZCL = { liter: 0, us_gallon: 1, imperial_gallon: 2 };
-const WATER_FLOW_UNIT_SETTING_DEFAULT = 'liter';
+// IrrigationAmountUnit enum value for Liter. The app always forces the
+// device into this unit - no gallon support, no setting to configure it.
+const ZCL_UNIT_OF_WATER_FLOW_LITER = 0;
 
 // Homey does not retroactively add capabilities introduced by an app
 // update to already-paired devices, so this full list is reconciled on
@@ -104,12 +103,10 @@ class HydroOneDevice extends ZigBeeDevice {
 
     this.registerCapability('measure_battery', CLUSTER.POWER_CONFIGURATION);
 
-    // The capacity unit is a device setting rather than a capability (it's
-    // rarely changed); push the current setting to the device on pairing.
+    // The app only ever sends/reads amounts in liters, so force the device
+    // into that unit once on pairing rather than exposing it as a setting.
     if (this.isFirstInit()) {
-      await this._writeWaterFlowUnit(
-        this.getSetting('water_flow_unit') ?? WATER_FLOW_UNIT_SETTING_DEFAULT,
-      );
+      await this._writeWaterFlowUnit();
     }
 
     this.registerCapability('measure_water_usage_duration', SonoffHydroCluster, {
@@ -123,12 +120,6 @@ class HydroOneDevice extends ZigBeeDevice {
       report: 'waterUsageVolume',
       reportParser: value => value / LITERS_PER_CUBIC_METER,
     });
-  }
-
-  async onSettings({ newSettings, changedKeys }) {
-    if (changedKeys.includes('water_flow_unit')) {
-      await this._writeWaterFlowUnit(newSettings.water_flow_unit);
-    }
   }
 
   // Used by the "water for a duration" Flow action.
@@ -162,12 +153,9 @@ class HydroOneDevice extends ZigBeeDevice {
     await this.triggerCapabilityListener('onoff', true);
   }
 
-  async _writeWaterFlowUnit(unit) {
+  async _writeWaterFlowUnit() {
     await this.zclNode.endpoints[1].clusters.sonoffHydro
-      .writeAttributes({
-        unitOfWaterFlow:
-          WATER_FLOW_UNIT_TO_ZCL[unit] ?? WATER_FLOW_UNIT_TO_ZCL[WATER_FLOW_UNIT_SETTING_DEFAULT],
-      })
+      .writeAttributes({ unitOfWaterFlow: ZCL_UNIT_OF_WATER_FLOW_LITER })
       .catch(err => this.error('Error: could not write water flow unit', err));
   }
 }
