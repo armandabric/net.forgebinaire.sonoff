@@ -73,16 +73,18 @@ to m³ for `meter_water`. A short manual test showed a plausible reading
 (~2 L for a brief run), which supports the assumption, but it hasn't been
 checked against a precisely measured volume yet.
 
-Not yet ported (present in the source ZHA quirk, not in this app):
-
-- Manual rain delay.
-
-Deliberately **not** ported, and not planned:
+Deliberately **not** ported, and not planned - all three below are
+present in the source ZHA quirk but are being left out on purpose:
 
 - The device's own 6 scheduled irrigation plans (day/time, repeat mode,
   weekday mask).
 - Seasonal (monthly) watering adjustment (only meaningful for the
   scheduled plans above - has no effect on manual irrigation).
+- Manual rain delay (`SonoffManualRainDelayConfigCluster` in the source
+  quirk) - despite the name, there's no rain sensor involved; it's a
+  user-triggered "pause for N hours" command. The only thing it pauses
+  is the device's own scheduled plans above, so without those it has no
+  effect on anything this app does (manual irrigation is unaffected).
 
 Scheduling is Homey's job, not this app's: the Homey ecosystem already
 has a first-class way to run something on a schedule - Homey's own Flow
@@ -93,12 +95,8 @@ duplicate that, is a poor fit for Homey's capability/Flow model (a
 28-byte payload per plan, 6 plans, weekday masks, repeat modes - no
 native equivalent of Home Assistant's per-field entities), and would
 only work in parallel with/independently of whatever the user already
-built in Flow. Both remain protocol-wise understood in the source quirk
-if this decision is ever revisited.
-
-Manual rain delay is a simpler case (a single "pause for N hours"
-command, not a scheduler) and is still just deferred, not ruled out -
-see `SonoffManualRainDelayConfigCluster` in the source quirk.
+built in Flow. All three remain protocol-wise understood in the source
+quirk if this decision is ever revisited.
 
 ## Architecture
 
