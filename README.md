@@ -75,15 +75,30 @@ checked against a precisely measured volume yet.
 
 Not yet ported (present in the source ZHA quirk, not in this app):
 
-- The 6 scheduled irrigation plans (day/time, repeat mode, weekday mask).
-- Seasonal (monthly) watering adjustment.
 - Manual rain delay.
 
-These all live behind the same `sonoffHydro` cluster (`0xFC11`) and are
-protocol-wise understood (see the source quirk), just not wired up yet.
-The scheduled plans in particular use a 28-byte payload and would likely
-need a custom settings page rather than plain capabilities, since Homey
-has no native equivalent of Home Assistant's per-field entities.
+Deliberately **not** ported, and not planned:
+
+- The device's own 6 scheduled irrigation plans (day/time, repeat mode,
+  weekday mask).
+- Seasonal (monthly) watering adjustment (only meaningful for the
+  scheduled plans above - has no effect on manual irrigation).
+
+Scheduling is Homey's job, not this app's: the Homey ecosystem already
+has a first-class way to run something on a schedule - Homey's own Flow
+system (time triggers, "every day at..." apps, etc.) - which can already
+call the "Open the valve for a duration"/"a volume" Flow actions this
+app provides. Reimplementing the device's own on-device scheduler would
+duplicate that, is a poor fit for Homey's capability/Flow model (a
+28-byte payload per plan, 6 plans, weekday masks, repeat modes - no
+native equivalent of Home Assistant's per-field entities), and would
+only work in parallel with/independently of whatever the user already
+built in Flow. Both remain protocol-wise understood in the source quirk
+if this decision is ever revisited.
+
+Manual rain delay is a simpler case (a single "pause for N hours"
+command, not a scheduler) and is still just deferred, not ruled out -
+see `SonoffManualRainDelayConfigCluster` in the source quirk.
 
 ## Architecture
 
