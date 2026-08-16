@@ -4,11 +4,11 @@
       "id": "water_for_duration",
       "title": {
         "en": "Water for a duration",
-        "fr": "Arroser pendant une durée"
+        "fr": "Ouvrir la vanne pendant une durée"
       },
       "titleFormatted": {
         "en": "Water for [[duration]] minutes",
-        "fr": "Arroser pendant [[duration]] minutes"
+        "fr": "Ouvrir la vanne pendant [[duration]] minutes"
       },
       "args": [
         {
