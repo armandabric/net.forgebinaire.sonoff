@@ -7,11 +7,20 @@
         "fr": "Arroser pendant une durée"
       },
       "titleFormatted": {
-        "en": "Water for a duration",
-        "fr": "Arroser pendant une durée"
+        "en": "Water for [[duration]] minutes",
+        "fr": "Arroser pendant [[duration]] minutes"
       },
-      "duration": true,
-      "args": []
+      "args": [
+        {
+          "name": "duration",
+          "type": "number",
+          "title": { "en": "Duration", "fr": "Durée" },
+          "min": 1,
+          "max": 719,
+          "step": 1,
+          "label": { "en": "min", "fr": "min" }
+        }
+      ]
     },
     {
       "id": "water_for_volume",
