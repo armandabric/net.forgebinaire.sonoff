@@ -10,7 +10,7 @@
   "connectivity": [
     "zigbee"
   ],
-  "brandColor": "#0088CE",
+  "brandColor": "#0099CC",
   "name": {
     "en": "Sonoff Hydro",
     "fr": "Sonoff Hydro"
@@ -313,7 +313,8 @@
       "setable": false,
       "uiComponent": "sensor",
       "units": {
-        "en": "min"
+        "en": "min",
+        "fr": "min"
       }
     }
   }
