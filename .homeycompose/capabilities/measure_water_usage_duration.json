@@ -8,6 +8,7 @@
   "setable": false,
   "uiComponent": "sensor",
   "units": {
-    "en": "min"
+    "en": "min",
+    "fr": "min"
   }
 }
