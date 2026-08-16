@@ -28,8 +28,8 @@ device tile only shows `onoff` plus the status capabilities above.
 Configuring and starting a watering run is done through two Flow actions
 instead (`drivers/hydro-one/driver.flow.compose.json`):
 
-- **Water for a duration** — argument: duration (1-719 min).
-- **Water a volume** — arguments: amount in liters (1-10000) and fail-safe
+- **Open the valve for a duration** — argument: duration (1-719 min).
+- **Open the valve for a volume** — arguments: amount in liters (1-10000) and fail-safe
   duration (1-719 min, cuts the water off if the target volume is never
   reached).
 
@@ -48,7 +48,7 @@ isn't declared explicitly in the compose file.
 interprets the volume argument) is neither a capability, a Flow argument,
 nor a setting — this app forces it to Liter once on pairing
 (`Device#_writeWaterFlowUnit()`) and never changes it again, so the
-"Water a volume" amount is always in liters.
+"Open the valve for a volume" amount is always in liters.
 
 `meter_water` is a lifetime running total (per the source quirk's
 `TOTAL_INCREASING` state class), not a per-run value — to check how much a
@@ -155,7 +155,7 @@ needs revisiting.
   support Volume mode at the firmware level, so `Device#startVolumeIrrigation()`
   rejects them (checked via `getSetting('zb_product_id')`, populated
   automatically by `homey-zigbeedriver` for any paired Zigbee device) -
-  the "Water for a duration" Flow action still works on them. This
+  the "Open the valve for a duration" Flow action still works on them. This
   rejection is untested on real `SWV-ZNU`/`ZNE` hardware; only a
   flow-meter variant (`SWV-ZFE`) has been tested so far.
 

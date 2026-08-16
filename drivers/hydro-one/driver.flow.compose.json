@@ -3,11 +3,11 @@
     {
       "id": "water_for_duration",
       "title": {
-        "en": "Water for a duration",
+        "en": "Open the valve for a duration",
         "fr": "Ouvrir la vanne pendant une durée"
       },
       "titleFormatted": {
-        "en": "Water for [[duration]] minutes",
+        "en": "Open the valve for [[duration]] minutes",
         "fr": "Ouvrir la vanne pendant [[duration]] minutes"
       },
       "args": [
@@ -25,12 +25,12 @@
     {
       "id": "water_for_volume",
       "title": {
-        "en": "Water a volume",
-        "fr": "Arroser un volume"
+        "en": "Open the valve for a volume",
+        "fr": "Ouvrir la vanne pour un volume"
       },
       "titleFormatted": {
-        "en": "Water [[amount]] L, fail-safe after [[fail_safe_duration]] min",
-        "fr": "Arroser [[amount]] L, sécurité après [[fail_safe_duration]] min"
+        "en": "Open the valve for [[amount]] L or [[fail_safe_duration]] min",
+        "fr": "Ouvrir la vanne pour [[amount]] L ou [[fail_safe_duration]] min"
       },
       "args": [
         {
