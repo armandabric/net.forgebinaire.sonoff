@@ -159,6 +159,23 @@ needs revisiting.
   rejection is untested on real `SWV-ZNU`/`ZNE` hardware; only a
   flow-meter variant (`SWV-ZFE`) has been tested so far.
 
+  This means the "Open the valve for a volume" Flow card is still offered
+  in the UI on no-flow-meter devices and only fails when run. Hiding it
+  outright turns out to need more than it looks like: Homey's Flow card
+  `"$filter": "capabilities=..."` (apps.developer.homey.app/the-basics/flow.md)
+  looks like the fix, but the docs explicitly warn that per-device
+  `addCapability`/`removeCapability` calls (which is how `meter_water`
+  would have to be toggled per product ID within this single driver)
+  **don't** update that filter - it only reflects each driver's static,
+  manifest-declared capability list. Actually hiding the card requires
+  splitting `hydro-one` into two drivers (flow-meter vs. duration-only),
+  mirroring the source quirk's two cluster classes
+  (`SonoffSingleIrrigationConfigCluster` vs.
+  `SonoffDurationOnlySingleIrrigationConfigCluster`), each with its own
+  `driver.compose.json` capabilities list and `driver.flow.compose.json`
+  (only the flow-meter driver would define `water_for_volume`). Deferred
+  for now - the runtime rejection above is the interim safeguard.
+
 ## Testing
 
 Requires a **Homey Pro** (Zigbee radio — Homey Cloud/Bridge cannot pair
