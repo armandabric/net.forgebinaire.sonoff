@@ -93,16 +93,18 @@ automatically every time (confirmed by running `homey app compose` to
 migrate this repo from a hand-written `app.json`, then diffing the
 regenerated output against the original — semantically identical).
 
-`.homeycompose/capabilities/irrigation_mode.json` /
-`irrigation_duration.json` / `irrigation_amount.json` /
-`irrigation_fail_safe_duration.json` still exist despite no driver
-listing them anymore (manual irrigation moved to Flow actions - see
-below). `Device#removeCapability()` needs a capability ID to still be a
-recognized definition to deregister it from an already-paired device;
-deleting the definition entirely made that migration step 404
-(`Invalid Capability`) on real hardware instead of cleaning up the
-device. Leave these files in place - deleting them is only safe once no
-paired device can still be carrying the capability.
+Manual irrigation used to be exposed as capabilities
+(`irrigation_mode`/`irrigation_duration`/`irrigation_amount`/
+`irrigation_fail_safe_duration`) before moving to Flow actions - see
+below. Their `.homeycompose/capabilities/*.json` definitions were kept
+around for a while after that so `Device#removeCapability()` (which
+needs a capability ID to still be a recognized definition to
+deregister it from an already-paired device) could clean up the one
+device that had paired with the older version; deleting the
+definitions outright made that migration step 404 (`Invalid
+Capability`) on real hardware instead. Removed for good once that
+device had re-initialized at least once past the fix - this app isn't
+published, so no other paired device could ever have carried them.
 
 ### The custom "Array" ZCL data type
 

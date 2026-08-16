@@ -35,17 +35,6 @@ const ALL_CAPABILITIES = [
   'meter_water',
 ];
 
-// Capabilities removed from a previous version of this app (manual
-// irrigation config, now Flow actions instead), still present on devices
-// paired back then.
-const REMOVED_CAPABILITIES = [
-  'irrigation_amount_unit',
-  'irrigation_mode',
-  'irrigation_duration',
-  'irrigation_amount',
-  'irrigation_fail_safe_duration',
-];
-
 // Liters assumed for waterUsageVolume - the source quirk declares no
 // explicit unit for it. meter_water is conventionally m³ in Homey.
 const LITERS_PER_CUBIC_METER = 1000;
@@ -62,11 +51,6 @@ class HydroOneDevice extends ZigBeeDevice {
     for (const capabilityId of ALL_CAPABILITIES) {
       if (!this.hasCapability(capabilityId)) {
         await this.addCapability(capabilityId);
-      }
-    }
-    for (const capabilityId of REMOVED_CAPABILITIES) {
-      if (this.hasCapability(capabilityId)) {
-        await this.removeCapability(capabilityId);
       }
     }
 
