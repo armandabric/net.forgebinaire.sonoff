@@ -44,6 +44,19 @@ themselves are registered once in `driver.js` via
 auto-injects the `device` argument for driver-scoped Flow cards, so it
 isn't declared explicitly in the compose file.
 
+The three custom capabilities (`alarm_water_shortage`, `child_lock`,
+`measure_water_usage_duration`) each get a Flow trigger card too
+(`alarm_water_shortage_true`/`_false`, `child_lock_true`/`_false`,
+`measure_water_usage_duration_changed`). These need no run listener or
+manual `.trigger()` call — Homey fires them automatically whenever
+`registerCapability()` updates the capability's value, as long as the
+IDs in `driver.flow.compose.json` match the convention
+(`<capability_id>_true`/`_false` for booleans, `<capability_id>_changed`
+with a same-named token for numbers/enums/strings). Standard
+capabilities (`onoff`, `alarm_water`, `measure_battery`, `meter_water`)
+already come with their own built-in Homey triggers, so none were added
+for those.
+
 `sonoffHydro.unitOfWaterFlow` (`0x5021`, which governs how the firmware
 interprets the volume argument) is neither a capability, a Flow argument,
 nor a setting — this app forces it to Liter once on pairing

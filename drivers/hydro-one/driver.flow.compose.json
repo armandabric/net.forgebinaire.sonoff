@@ -1,4 +1,61 @@
 {
+  "triggers": [
+    {
+      "id": "alarm_water_shortage_true",
+      "title": {
+        "en": "Water shortage detected",
+        "fr": "Manque d'eau détecté"
+      },
+      "hint": {
+        "en": "Triggers when the water shortage alarm turns on.",
+        "fr": "Se déclenche quand l'alarme de manque d'eau s'active."
+      }
+    },
+    {
+      "id": "alarm_water_shortage_false",
+      "title": {
+        "en": "Water shortage resolved",
+        "fr": "Manque d'eau résolu"
+      },
+      "hint": {
+        "en": "Triggers when the water shortage alarm turns off.",
+        "fr": "Se déclenche quand l'alarme de manque d'eau se désactive."
+      }
+    },
+    {
+      "id": "child_lock_true",
+      "title": {
+        "en": "Child lock turned on",
+        "fr": "Verrouillage enfant activé"
+      }
+    },
+    {
+      "id": "child_lock_false",
+      "title": {
+        "en": "Child lock turned off",
+        "fr": "Verrouillage enfant désactivé"
+      }
+    },
+    {
+      "id": "measure_water_usage_duration_changed",
+      "title": {
+        "en": "Last watering duration updated",
+        "fr": "Durée du dernier arrosage mise à jour"
+      },
+      "hint": {
+        "en": "Triggers when a watering run finishes and its duration is reported.",
+        "fr": "Se déclenche à la fin d'un arrosage, quand sa durée est rapportée."
+      },
+      "tokens": [
+        {
+          "name": "measure_water_usage_duration",
+          "type": "number",
+          "title": { "en": "Duration", "fr": "Durée" },
+          "example": 10
+        }
+      ]
+    }
+  ],
   "actions": [
     {
       "id": "water_for_duration",
