@@ -15,8 +15,8 @@
     "fr": "Sonoff Hydro"
   },
   "description": {
-    "en": "Instant leak alerts and on-demand watering for your Sonoff Hydro One valve",
-    "fr": "Alertes de fuite instantanées et arrosage à la demande pour votre vanne Sonoff Hydro One"
+    "en": "Control your Sonoff Hydro One Zigbee water valve and get leak alerts",
+    "fr": "Contrôlez votre vanne d'eau Zigbee Sonoff Hydro One et recevez des alertes de fuite"
   },
   "category": [
     "appliances"
