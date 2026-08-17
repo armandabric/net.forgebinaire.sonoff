@@ -1,5 +1,7 @@
 # Reference material
 
+## Home Assistant plugin
+
 `sonoff_hydro_one_zha_quirk.py` — Sonoff's official [ZHA](https://www.home-assistant.io/integrations/zha/)
 quirk (Python, [zigpy](https://github.com/zigpy/zigpy)) for the Hydro One
 water valve (SWV-ZFU/ZFE/ZNU/ZNE), used for Home Assistant. It's the only
@@ -12,3 +14,8 @@ Not part of the Homey app itself (not referenced by `app.json` or any
 driver) — kept purely for reference when porting the remaining features
 (scheduled irrigation plans, seasonal adjustment, rain delay, water usage
 sensors).
+
+
+## zigbee2mqtt docs
+
+https://www.zigbee2mqtt.io/devices/SWV-ZFE.html
