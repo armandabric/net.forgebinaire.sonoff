@@ -20,7 +20,8 @@
   "connectivity": ["zigbee"],
   "images": {
     "small": "/drivers/hydro-one/assets/images/small.png",
-    "large": "/drivers/hydro-one/assets/images/large.png"
+    "large": "/drivers/hydro-one/assets/images/large.png",
+    "xlarge": "/drivers/hydro-one/assets/images/xlarge.png"
   },
   "zigbee": {
     "manufacturerName": ["SONOFF"],

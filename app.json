@@ -16,8 +16,8 @@
     "fr": "Sonoff Hydro"
   },
   "description": {
-    "en": "Control your Sonoff Zigbee smart water valves",
-    "fr": "Contrôle de vos vannes d'eau connectées Zigbee Sonoff"
+    "en": "Control your Sonoff Hydro One Zigbee water valve and get leak alerts",
+    "fr": "Contrôlez votre vanne d'eau Zigbee Sonoff Hydro One et recevez des alertes de fuite"
   },
   "category": [
     "appliances"
@@ -25,7 +25,8 @@
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png"
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
     "name": "Armand Abric",
@@ -241,7 +242,8 @@
       ],
       "images": {
         "small": "/drivers/hydro-one/assets/images/small.png",
-        "large": "/drivers/hydro-one/assets/images/large.png"
+        "large": "/drivers/hydro-one/assets/images/large.png",
+        "xlarge": "/drivers/hydro-one/assets/images/xlarge.png"
       },
       "zigbee": {
         "manufacturerName": [
