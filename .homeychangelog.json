@@ -1,5 +1,8 @@
 {
   "0.1.1": {
     "en": "First release (for test purpose)"
+  },
+  "0.1.2": {
+    "en": "Improve application texts and icons"
   }
 }
