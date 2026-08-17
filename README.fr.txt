@@ -1,3 +1,5 @@
 Sonoff Hydro ajoute la prise en charge de la vanne d'eau connectée Zigbee Sonoff Hydro One dans Homey : modèles SWV-ZFU, SWV-ZFE, SWV-ZNU et SWV-ZNE. L'application fournit le contrôle marche/arrêt, les alarmes de fuite et de manque d'eau, l'état du verrouillage enfant, le niveau de batterie, ainsi que la durée et le volume du dernier arrosage. Deux actions de flow permettent d'ouvrir la vanne pour une durée donnée ou une quantité d'eau donnée ; l'action par quantité nécessite le débitmètre intégré aux modèles SWV-ZFU/SWV-ZFE.
 
 La vanne communique en Zigbee directement avec Homey, sans compte cloud ni application compagnon. La programmation des arrosages se fait via le système de flows de Homey.
+
+Le Sonoff Hydro DUO (SWV-ZF2E, SWV-ZF2U) est un produit différent et n'est pas pris en charge par cette application.
