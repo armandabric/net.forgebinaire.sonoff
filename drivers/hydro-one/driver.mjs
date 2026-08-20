@@ -1,6 +1,4 @@
-"use strict";
-
-const { ZigBeeDriver } = require("homey-zigbeedriver");
+import { ZigBeeDriver } from "homey-zigbeedriver";
 
 class HydroOneDriver extends ZigBeeDriver {
   async onInit() {
@@ -23,4 +21,4 @@ class HydroOneDriver extends ZigBeeDriver {
   }
 }
 
-module.exports = HydroOneDriver;
+export default HydroOneDriver;

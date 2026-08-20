@@ -2,7 +2,7 @@
   "name": "net.forgebinaire.sonoff",
   "version": "0.1.0",
   "private": true,
-  "main": "app.js",
+  "main": "app.mjs",
   "scripts": {
     "dev": "homey app run",
     "build": "homey app build",
