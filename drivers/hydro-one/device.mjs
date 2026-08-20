@@ -1,13 +1,11 @@
-"use strict";
+import { ZigBeeDevice } from "homey-zigbeedriver";
+import { CLUSTER } from "zigbee-clusters";
 
-const { ZigBeeDevice } = require("homey-zigbeedriver");
-const { CLUSTER } = require("zigbee-clusters");
-
-const SonoffHydroCluster = require("../../lib/SonoffHydroCluster");
-const {
+import SonoffHydroCluster from "../../lib/SonoffHydroCluster.mjs";
+import {
   SingleIrrigationMode,
   encodeSingleIrrigationPayload,
-} = require("../../lib/sonoffIrrigation");
+} from "../../lib/sonoffIrrigation.mjs";
 
 // Bit layout of the sonoffHydro `waterValveState` attribute (0x500C), as
 // documented in Sonoff's ZHA quirk: several alarm conditions are packed
@@ -152,4 +150,4 @@ class HydroOneDevice extends ZigBeeDevice {
   }
 }
 
-module.exports = HydroOneDevice;
+export default HydroOneDevice;

@@ -1,6 +1,4 @@
-"use strict";
-
-const Homey = require("homey");
+import Homey from "homey";
 
 class SonoffApp extends Homey.App {
   async onInit() {
@@ -8,4 +6,4 @@ class SonoffApp extends Homey.App {
   }
 }
 
-module.exports = SonoffApp;
+export default SonoffApp;
